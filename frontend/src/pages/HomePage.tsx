@@ -434,8 +434,8 @@ const HomePage = () => {
                 <Stack spacing={3}>
                   <TextField
                     fullWidth
-                    label="Store Domain"
-                    placeholder="your-store.myshopify.com or your-store"
+                    label="Your Shopify Store"
+                    placeholder="Enter your store name (e.g., mystore or mystore.myshopify.com)"
                     value={shopDomain}
                     onChange={(e) => setShopDomain(e.target.value)}
                     disabled={isLoading}
