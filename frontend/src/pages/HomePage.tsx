@@ -626,26 +626,6 @@ const HomePage = () => {
             </Accordion>
           ))}
         </Box>
-
-        {/* Final CTA */}
-        <Box sx={{ textAlign: 'center', my: 8, p: 6, bgcolor: 'background.paper', borderRadius: 2 }}>
-          <Typography variant="h4" component="h2" gutterBottom>
-            Ready to Transform Your Business?
-          </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-            Join thousands of merchants using ShopGauge to stay ahead of the competition
-          </Typography>
-          
-          {!showAuthConnected && (
-            <ConnectButton
-              onClick={() => setShowConnectForm(true)}
-              startIcon={<ArrowForwardIcon />}
-              size="large"
-            >
-              Start Your Free Trial
-            </ConnectButton>
-          )}
-        </Box>
       </Container>
     </Box>
   );
