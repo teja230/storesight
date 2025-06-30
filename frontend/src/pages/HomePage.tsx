@@ -56,7 +56,7 @@ import {
 const HeroSection = styled(Box)(({ theme }) => ({
   textAlign: 'center',
   padding: theme.spacing(8, 2),
-  background: theme.palette.primary.main,
+  background: `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.primary.main} 50%, ${theme.palette.primary.dark} 100%)`,
   color: theme.palette.primary.contrastText,
   [theme.breakpoints.down('md')]: {
     padding: theme.spacing(6, 2),
@@ -64,14 +64,25 @@ const HeroSection = styled(Box)(({ theme }) => ({
 }));
 
 const PricingBanner = styled(Paper)(({ theme }) => ({
-  background: theme.palette.background.paper,
-  color: theme.palette.text.primary,
+  background: `linear-gradient(135deg, ${theme.palette.secondary.light} 0%, ${theme.palette.secondary.main} 50%, ${theme.palette.secondary.dark} 100%)`,
+  color: theme.palette.secondary.contrastText,
   padding: theme.spacing(6),
   textAlign: 'center',
   borderRadius: theme.spacing(2),
   margin: theme.spacing(4, 0),
-  border: `2px solid ${theme.palette.primary.main}`,
-  boxShadow: theme.shadows[4],
+  position: 'relative',
+  overflow: 'hidden',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: 'rgba(255,255,255,0.15)',
+    backdropFilter: 'blur(4px)',
+    borderRadius: 'inherit',
+  },
 }));
 
 const FeatureGrid = styled(Box)(({ theme }) => ({
@@ -119,7 +130,7 @@ const TestimonialCard = styled(Card)(({ theme }) => ({
 }));
 
 const ConnectButton = styled(Button)(({ theme }) => ({
-  background: theme.palette.primary.main,
+  background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
   color: theme.palette.primary.contrastText,
   padding: theme.spacing(2, 4),
   borderRadius: theme.spacing(3),
@@ -130,7 +141,7 @@ const ConnectButton = styled(Button)(({ theme }) => ({
   border: 'none',
   minHeight: '48px',
   '&:hover': {
-    background: theme.palette.primary.dark,
+    background: `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
     boxShadow: theme.shadows[8],
     transform: 'translateY(-1px)',
   },
@@ -282,7 +293,7 @@ const HomePage = () => {
       console.log('HomePage: Detected OAuth callback, shop will be processed by AuthContext');
       setIsOAuthFlow(true);
     }
-
+    
     if (errorFromUrl) {
       console.log('HomePage: OAuth error detected:', errorFromUrl, errorMsgFromUrl);
       setErrorCode(errorFromUrl);
@@ -456,9 +467,9 @@ const HomePage = () => {
                         fullWidth
                         label="Store Domain"
                         placeholder="your-store.myshopify.com or your-store"
-                        value={shopDomain}
-                        onChange={(e) => setShopDomain(e.target.value)}
-                        disabled={isLoading}
+                      value={shopDomain}
+                      onChange={(e) => setShopDomain(e.target.value)}
+                      disabled={isLoading}
                         variant="outlined"
                         InputProps={{
                           style: { fontSize: '16px' } // Prevent iOS zoom
@@ -475,8 +486,8 @@ const HomePage = () => {
                           Back
                         </Button>
                         <ConnectButton
-                          type="submit"
-                          disabled={isLoading || !normalizeShopDomain(shopDomain)}
+                      type="submit"
+                      disabled={isLoading || !normalizeShopDomain(shopDomain)}
                           fullWidth
                         >
                           {isLoading ? <CircularProgress size={20} color="inherit" /> : 'Connect Store'}
@@ -605,7 +616,7 @@ const HomePage = () => {
           </FeatureGrid>
         </Box>
 
-        {/* FAQ Section */}
+      {/* FAQ Section */}
         <Box sx={{ my: 8 }}>
           <Typography variant="h4" component="h2" gutterBottom sx={{ textAlign: 'center', mb: 4 }}>
             Frequently Asked Questions
