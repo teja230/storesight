@@ -265,7 +265,7 @@ const HomePage = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [errorCode, setErrorCode] = useState('');
   const [showConnectForm, setShowConnectForm] = useState(false);
-  const { isAuthenticated, authLoading, logout, setShop } = useAuth();
+  const { isAuthenticated, authLoading, shop, logout, setShop } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const notifications = useNotifications();
@@ -397,7 +397,28 @@ const HomePage = () => {
               after 3-day free trial
             </Typography>
           </Box>
-          {/* CTA inside banner */}
+          {/* Connection states inside banner */}
+          {showAuthConnected && (
+            <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, bgcolor: 'rgba(255,255,255,0.15)', px: 3, py: 1.5, borderRadius: 4 }}>
+                <CheckCircleIcon sx={{ color: '#22c55e' }} />
+                <Typography variant="h6" component="span" sx={{ fontWeight: 600 }}>
+                  Connected to {shop || 'your store'}
+                </Typography>
+              </Box>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                <ConnectStoreButton onClick={() => navigate('/dashboard')}>
+                  Go to Dashboard
+                </ConnectStoreButton>
+                <ConnectStoreButton onClick={() => {
+                  setShowConnectForm(true);
+                }} sx={{ bgcolor: 'rgba(255,255,255,0.8)', color: '#ef4444' }}>
+                  Switch Store
+                </ConnectStoreButton>
+              </Stack>
+            </Box>
+          )}
+          {/* CTA inside banner for unauthenticated */}
           {!showAuthConnected && !showConnectForm && (
             <ConnectStoreButton
               onClick={() => setShowConnectForm(true)}
