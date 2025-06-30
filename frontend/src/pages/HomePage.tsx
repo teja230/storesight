@@ -169,7 +169,7 @@ const faqs = [
 const HeroSection = styled(Box)(({ theme }) => ({
   textAlign: 'center',
   padding: theme.spacing(8, 2),
-  background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+  background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
   color: theme.palette.primary.contrastText,
   [theme.breakpoints.down('md')]: {
     padding: theme.spacing(6, 2),
@@ -177,14 +177,15 @@ const HeroSection = styled(Box)(({ theme }) => ({
 }));
 
 const PricingBanner = styled(Paper)(({ theme }) => ({
-  background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
-  color: theme.palette.primary.contrastText,
+  background: `linear-gradient(135deg, ${theme.palette.secondary.main} 0%, ${theme.palette.secondary.dark} 100%)`,
+  color: theme.palette.secondary.contrastText,
   padding: theme.spacing(6),
   textAlign: 'center',
   borderRadius: theme.spacing(2),
   margin: theme.spacing(4, 0),
   position: 'relative',
   overflow: 'hidden',
+  boxShadow: theme.shadows[8],
   '&::before': {
     content: '""',
     position: 'absolute',
@@ -203,10 +204,14 @@ const PricingBanner = styled(Paper)(({ theme }) => ({
 
 const FeatureGrid = styled(Box)(({ theme }) => ({
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+  gridTemplateColumns: 'repeat(2, 1fr)',
   gap: theme.spacing(3),
   marginTop: theme.spacing(6),
   marginBottom: theme.spacing(6),
+  [theme.breakpoints.down('md')]: {
+    gridTemplateColumns: '1fr',
+    gap: theme.spacing(2),
+  },
 }));
 
 const CategoryCard = styled(Card)(({ theme }) => ({
@@ -214,10 +219,14 @@ const CategoryCard = styled(Card)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   padding: theme.spacing(3),
-  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+  background: `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${theme.palette.grey[50]} 100%)`,
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: theme.spacing(2),
+  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   '&:hover': {
     transform: 'translateY(-4px)',
     boxShadow: theme.shadows[8],
+    borderColor: theme.palette.primary.light,
   },
 }));
 
@@ -233,6 +242,7 @@ const ConnectForm = styled('form')(({ theme }) => ({
   background: 'rgba(255, 255, 255, 0.95)',
   backdropFilter: 'blur(10px)',
   boxShadow: theme.shadows[4],
+  border: `1px solid rgba(255, 255, 255, 0.2)`,
 }));
 
 const ConnectedBadge = styled(Box)(({ theme }) => ({
@@ -246,6 +256,7 @@ const ConnectedBadge = styled(Box)(({ theme }) => ({
   borderRadius: theme.spacing(2),
   marginBottom: theme.spacing(2),
   boxShadow: theme.shadows[4],
+  border: `1px solid ${theme.palette.success.dark}`,
 }));
 
 const HomePage = () => {
@@ -451,6 +462,11 @@ const HomePage = () => {
                   InputProps={{
                     startAdornment: <StorefrontIcon sx={{ mr: 1, color: 'text.secondary' }} />,
                   }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    }
+                  }}
                 />
                 <Button
                   type="submit"
@@ -458,6 +474,14 @@ const HomePage = () => {
                   size="large"
                   disabled={isLoading || !normalizeShopDomain(shopDomain)}
                   startIcon={isLoading ? <CircularProgress size={20} /> : <StorefrontIcon />}
+                  sx={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    color: 'primary.main',
+                    '&:hover': {
+                      backgroundColor: 'white',
+                      transform: 'translateY(-2px)',
+                    }
+                  }}
                 >
                   {isLoading ? 'Connecting...' : 'Connect Store'}
                 </Button>
@@ -477,7 +501,15 @@ const HomePage = () => {
                     size="large"
                     onClick={() => navigate('/dashboard')}
                     startIcon={<DashboardIcon />}
-                    sx={{ bgcolor: 'rgba(255,255,255,0.9)', color: 'primary.main', '&:hover': { bgcolor: 'white' } }}
+                    sx={{ 
+                      backgroundColor: 'rgba(255,255,255,0.9)', 
+                      color: 'primary.main', 
+                      border: `1px solid rgba(255,255,255,0.3)`,
+                      '&:hover': { 
+                        backgroundColor: 'white',
+                        transform: 'translateY(-2px)',
+                      } 
+                    }}
                   >
                     Go to Dashboard
                   </Button>
@@ -486,7 +518,16 @@ const HomePage = () => {
                     size="large"
                     onClick={handleSwitchStore}
                     startIcon={<SwapHorizIcon />}
-                    sx={{ borderColor: 'rgba(255,255,255,0.5)', color: 'white', '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' } }}
+                    sx={{ 
+                      borderColor: 'rgba(255,255,255,0.7)', 
+                      color: 'white', 
+                      backgroundColor: 'rgba(255,255,255,0.1)',
+                      '&:hover': { 
+                        borderColor: 'white', 
+                        backgroundColor: 'rgba(255,255,255,0.2)',
+                        transform: 'translateY(-2px)',
+                      } 
+                    }}
                   >
                     Switch Store
                   </Button>
@@ -506,6 +547,11 @@ const HomePage = () => {
                   InputProps={{
                     startAdornment: <StorefrontIcon sx={{ mr: 1, color: 'text.secondary' }} />,
                   }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    }
+                  }}
                 />
                 <Button
                   type="submit"
@@ -513,6 +559,14 @@ const HomePage = () => {
                   size="large"
                   disabled={isLoading || !normalizeShopDomain(shopDomain)}
                   startIcon={isLoading ? <CircularProgress size={20} /> : <StorefrontIcon />}
+                  sx={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    color: 'primary.main',
+                    '&:hover': {
+                      backgroundColor: 'white',
+                      transform: 'translateY(-2px)',
+                    }
+                  }}
                 >
                   {isLoading ? 'Connecting...' : 'Connect Store'}
                 </Button>
@@ -524,16 +578,18 @@ const HomePage = () => {
                 onClick={() => setShowConnectForm(true)}
                 startIcon={<StorefrontIcon />}
                 sx={{ 
-                  bgcolor: 'rgba(255,255,255,0.9)', 
+                  backgroundColor: 'rgba(255,255,255,0.9)', 
                   color: 'primary.main', 
                   px: 4, 
                   py: 2,
                   fontSize: '1.1rem',
+                  border: `1px solid rgba(255,255,255,0.3)`,
                   '&:hover': { 
-                    bgcolor: 'white',
-                    transform: 'scale(1.05)',
+                    backgroundColor: 'white',
+                    transform: 'scale(1.05) translateY(-2px)',
+                    boxShadow: 4,
                   },
-                  transition: 'all 0.3s ease'
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
                 }}
               >
                 Connect Store
@@ -546,30 +602,45 @@ const HomePage = () => {
           </Typography>
         </PricingBanner>
 
-        {/* Feature Categories */}
+        {/* Feature Categories - 2x2 Grid */}
         <Box sx={{ my: 8 }}>
-          <Typography variant="h3" component="h2" textAlign="center" gutterBottom>
+          <Typography variant="h3" component="h2" textAlign="center" gutterBottom sx={{ color: 'text.primary' }}>
             Enterprise-Grade Analytics Platform
+          </Typography>
+          <Typography variant="h6" color="text.secondary" textAlign="center" sx={{ maxWidth: '700px', margin: '0 auto', mb: 4 }}>
+            Comprehensive tools designed for enterprise success
           </Typography>
           <FeatureGrid>
             {featureCategories.map((category, index) => (
               <Fade in={true} timeout={500 * (index + 1)} key={category.title}>
                 <CategoryCard>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <Avatar sx={{ bgcolor: `${category.color}.main`, mr: 2 }}>
+                    <Avatar sx={{ 
+                      bgcolor: `${category.color}.main`, 
+                      mr: 2,
+                      width: 48,
+                      height: 48,
+                      boxShadow: 2,
+                    }}>
                       {category.icon}
                     </Avatar>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
                       {category.title}
                     </Typography>
                   </Box>
                   <List dense>
                     {category.features.map((feature, idx) => (
-                      <ListItem key={idx} sx={{ px: 0 }}>
+                      <ListItem key={idx} sx={{ px: 0, py: 0.5 }}>
                         <ListItemIcon sx={{ minWidth: 32 }}>
                           <CheckCircleIcon color={category.color} fontSize="small" />
                         </ListItemIcon>
-                        <ListItemText primary={feature} />
+                        <ListItemText 
+                          primary={feature} 
+                          primaryTypographyProps={{
+                            variant: 'body2',
+                            color: 'text.secondary'
+                          }}
+                        />
                       </ListItem>
                     ))}
                   </List>
@@ -580,9 +651,18 @@ const HomePage = () => {
         </Box>
 
         {/* Complete Feature List */}
-        <Paper sx={{ p: 4, mb: 8 }}>
-          <Typography variant="h4" textAlign="center" gutterBottom>
+        <Paper sx={{ 
+          p: 4, 
+          mb: 8, 
+          background: `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${theme.palette.grey[50]} 100%)`,
+          border: `1px solid ${theme.palette.divider}`,
+          borderRadius: 2,
+        }}>
+          <Typography variant="h4" textAlign="center" gutterBottom sx={{ color: 'text.primary' }}>
             Complete Feature Set
+          </Typography>
+          <Typography variant="body1" color="text.secondary" textAlign="center" sx={{ mb: 4, maxWidth: '600px', mx: 'auto' }}>
+            Everything you need to succeed, included in every plan
           </Typography>
           <Box sx={{ 
             display: 'grid', 
@@ -591,9 +671,23 @@ const HomePage = () => {
             mt: 4
           }}>
             {detailedFeatures.map((feature, index) => (
-              <Box key={index} sx={{ display: 'flex', alignItems: 'flex-start', p: 1 }}>
-                <CheckCircleIcon color="primary" sx={{ mr: 1, mt: 0.5, flexShrink: 0 }} />
-                <Typography variant="body2">{feature}</Typography>
+              <Box key={index} sx={{ 
+                display: 'flex', 
+                alignItems: 'flex-start', 
+                p: 2,
+                borderRadius: 1,
+                transition: 'background-color 0.2s ease',
+                '&:hover': {
+                  backgroundColor: 'action.hover',
+                }
+              }}>
+                <CheckCircleIcon 
+                  color="primary" 
+                  sx={{ mr: 1.5, mt: 0.5, flexShrink: 0, fontSize: '1.25rem' }} 
+                />
+                <Typography variant="body2" color="text.primary" sx={{ fontWeight: 500 }}>
+                  {feature}
+                </Typography>
               </Box>
             ))}
           </Box>
@@ -601,8 +695,11 @@ const HomePage = () => {
 
         {/* Testimonials */}
         <Box sx={{ my: 8 }}>
-          <Typography variant="h4" textAlign="center" gutterBottom>
+          <Typography variant="h4" textAlign="center" gutterBottom sx={{ color: 'text.primary' }}>
             What Merchants Say
+          </Typography>
+          <Typography variant="body1" color="text.secondary" textAlign="center" sx={{ mb: 4, maxWidth: '600px', mx: 'auto' }}>
+            Real results from real businesses using ShopGauge
           </Typography>
           <Box sx={{ 
             display: 'grid', 
@@ -611,19 +708,32 @@ const HomePage = () => {
             mt: 4
           }}>
             {testimonials.map((testimonial, index) => (
-              <Card key={index} sx={{ height: '100%', borderLeft: 4, borderColor: `${testimonial.color}.main` }}>
-                <CardContent>
-                  <Typography variant="body2" sx={{ fontStyle: 'italic', mb: 2 }}>
+              <Card key={index} sx={{ 
+                height: '100%', 
+                borderLeft: 4, 
+                borderColor: `${testimonial.color}.main`,
+                background: `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${theme.palette.grey[50]} 100%)`,
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: 4,
+                }
+              }}>
+                <CardContent sx={{ p: 3 }}>
+                  <Typography variant="body2" sx={{ fontStyle: 'italic', mb: 2, color: 'text.primary', lineHeight: 1.6 }}>
                     "{testimonial.text}"
                   </Typography>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'primary.main', mb: 1 }}>
                     — {testimonial.author}
                   </Typography>
                   <Chip 
                     label={testimonial.metric} 
                     size="small" 
                     color={testimonial.color}
-                    sx={{ mt: 1 }}
+                    sx={{ 
+                      mt: 1,
+                      fontWeight: 600,
+                    }}
                   />
                 </CardContent>
               </Card>
@@ -633,17 +743,44 @@ const HomePage = () => {
 
         {/* FAQ Section */}
         <Box sx={{ my: 8 }}>
-          <Typography variant="h4" textAlign="center" gutterBottom>
+          <Typography variant="h4" textAlign="center" gutterBottom sx={{ color: 'text.primary' }}>
             Frequently Asked Questions
           </Typography>
-          <Box sx={{ mt: 4 }}>
+          <Typography variant="body1" color="text.secondary" textAlign="center" sx={{ mb: 4, maxWidth: '600px', mx: 'auto' }}>
+            Everything you need to know about ShopGauge
+          </Typography>
+          <Box sx={{ mt: 4, maxWidth: '800px', mx: 'auto' }}>
             {faqs.map((faq, index) => (
-              <Accordion key={index}>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography variant="h6">{faq.question}</Typography>
+              <Accordion 
+                key={index}
+                sx={{
+                  mb: 1,
+                  border: `1px solid ${theme.palette.divider}`,
+                  borderRadius: `${theme.spacing(1)} !important`,
+                  '&:before': {
+                    display: 'none',
+                  },
+                  '&.Mui-expanded': {
+                    boxShadow: 2,
+                  }
+                }}
+              >
+                <AccordionSummary 
+                  expandIcon={<ExpandMoreIcon />}
+                  sx={{
+                    '& .MuiAccordionSummary-content': {
+                      margin: theme.spacing(2, 0),
+                    }
+                  }}
+                >
+                  <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                    {faq.question}
+                  </Typography>
                 </AccordionSummary>
-                <AccordionDetails>
-                  <Typography color="text.secondary">{faq.answer}</Typography>
+                <AccordionDetails sx={{ pt: 0 }}>
+                  <Typography color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                    {faq.answer}
+                  </Typography>
                 </AccordionDetails>
               </Accordion>
             ))}
