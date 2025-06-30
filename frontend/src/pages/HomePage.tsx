@@ -56,7 +56,7 @@ import {
 const HeroSection = styled(Box)(({ theme }) => ({
   textAlign: 'center',
   padding: theme.spacing(8, 2),
-  background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+  background: theme.palette.primary.main,
   color: theme.palette.primary.contrastText,
   [theme.breakpoints.down('md')]: {
     padding: theme.spacing(6, 2),
@@ -64,24 +64,14 @@ const HeroSection = styled(Box)(({ theme }) => ({
 }));
 
 const PricingBanner = styled(Paper)(({ theme }) => ({
-  background: `linear-gradient(135deg, ${theme.palette.secondary.main} 0%, ${theme.palette.secondary.dark} 100%)`,
-  color: theme.palette.secondary.contrastText,
+  background: theme.palette.background.paper,
+  color: theme.palette.text.primary,
   padding: theme.spacing(6),
   textAlign: 'center',
   borderRadius: theme.spacing(2),
   margin: theme.spacing(4, 0),
-  position: 'relative',
-  overflow: 'hidden',
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 'inherit',
-  },
+  border: `2px solid ${theme.palette.primary.main}`,
+  boxShadow: theme.shadows[4],
 }));
 
 const FeatureGrid = styled(Box)(({ theme }) => ({
@@ -129,7 +119,7 @@ const TestimonialCard = styled(Card)(({ theme }) => ({
 }));
 
 const ConnectButton = styled(Button)(({ theme }) => ({
-  background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+  background: theme.palette.primary.main,
   color: theme.palette.primary.contrastText,
   padding: theme.spacing(2, 4),
   borderRadius: theme.spacing(3),
@@ -140,7 +130,7 @@ const ConnectButton = styled(Button)(({ theme }) => ({
   border: 'none',
   minHeight: '48px',
   '&:hover': {
-    background: `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
+    background: theme.palette.primary.dark,
     boxShadow: theme.shadows[8],
     transform: 'translateY(-1px)',
   },
@@ -394,8 +384,8 @@ const HomePage = () => {
           <Chip 
             label="Complete business intelligence platform" 
             sx={{ 
-              bgcolor: 'rgba(255, 255, 255, 0.2)', 
-              color: 'inherit',
+              bgcolor: theme.palette.primary.main,
+              color: theme.palette.primary.contrastText,
               fontWeight: 'bold',
               fontSize: '0.9rem'
             }} 
