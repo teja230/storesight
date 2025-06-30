@@ -56,33 +56,23 @@ import {
 const HeroSection = styled(Box)(({ theme }) => ({
   textAlign: 'center',
   padding: theme.spacing(8, 2),
-  background: `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.primary.main} 50%, ${theme.palette.primary.dark} 100%)`,
-  color: theme.palette.primary.contrastText,
+  background: 'linear-gradient(135deg, #eff6ff 0%, #ffffff 100%)',
+  color: theme.palette.text.primary,
   [theme.breakpoints.down('md')]: {
     padding: theme.spacing(6, 2),
   },
 }));
 
 const PricingBanner = styled(Paper)(({ theme }) => ({
-  background: `linear-gradient(135deg, ${theme.palette.secondary.light} 0%, ${theme.palette.secondary.main} 50%, ${theme.palette.secondary.dark} 100%)`,
-  color: theme.palette.secondary.contrastText,
+  background: 'linear-gradient(135deg, #3b82f6 0%, #9333ea 100%)',
+  color: theme.palette.common.white,
   padding: theme.spacing(6),
   textAlign: 'center',
   borderRadius: theme.spacing(2),
   margin: theme.spacing(4, 0),
   position: 'relative',
   overflow: 'hidden',
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: 'rgba(255,255,255,0.15)',
-    backdropFilter: 'blur(4px)',
-    borderRadius: 'inherit',
-  },
+  boxShadow: theme.shadows[6],
 }));
 
 const FeatureGrid = styled(Box)(({ theme }) => ({
@@ -129,25 +119,25 @@ const TestimonialCard = styled(Card)(({ theme }) => ({
   },
 }));
 
-const ConnectButton = styled(Button)(({ theme }) => ({
-  background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
-  color: theme.palette.primary.contrastText,
-  padding: theme.spacing(2, 4),
-  borderRadius: theme.spacing(3),
-  fontSize: '1.1rem',
+const ConnectStoreButton = styled(Button)(({ theme }) => ({
+  background: 'rgba(255,255,255,0.9)',
+  color: '#1d4ed8',
+  padding: theme.spacing(1.5, 4),
+  borderRadius: theme.spacing(2),
   fontWeight: 600,
   textTransform: 'none',
-  boxShadow: theme.shadows[4],
-  border: 'none',
-  minHeight: '48px',
+  border: '1px solid rgba(255,255,255,0.2)',
+  boxShadow: theme.shadows[3],
+  backdropFilter: 'blur(4px)',
+  transition: 'all 0.3s ease',
   '&:hover': {
-    background: `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
-    boxShadow: theme.shadows[8],
-    transform: 'translateY(-1px)',
+    background: '#ffffff',
+    boxShadow: theme.shadows[6],
+    transform: 'translateY(-2px)',
   },
   '&:disabled': {
-    background: theme.palette.action.disabled,
-    color: theme.palette.action.disabled,
+    opacity: 0.6,
+    color: '#9ca3af',
   },
 }));
 
@@ -384,122 +374,59 @@ const HomePage = () => {
         {/* Pricing Banner */}
         <PricingBanner elevation={8}>
           <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 'bold' }}>
-            $19.99/month
+            🚀 Limited Time Offer
           </Typography>
-          <Typography variant="h6" gutterBottom>
-            3-day free trial • No credit card required
+          <Typography variant="h6" gutterBottom sx={{ opacity: 0.9 }}>
+            Start your 3-day free trial today and unlock enterprise-grade analytics!
           </Typography>
-          <Typography variant="body1" sx={{ opacity: 0.9, mb: 3 }}>
-            Everything you need to grow your business with data-driven insights and competitive intelligence
-          </Typography>
-          <Chip 
-            label="Complete business intelligence platform" 
-            sx={{ 
-              bgcolor: theme.palette.primary.main,
-              color: theme.palette.primary.contrastText,
-              fontWeight: 'bold',
-              fontSize: '0.9rem'
-            }} 
-          />
-        </PricingBanner>
-
-        {/* Connect Store Section */}
-        <Box sx={{ textAlign: 'center', my: 6 }}>
-          {showAuthConnected ? (
-            <Box>
-              <Alert severity="success" sx={{ mb: 3, maxWidth: 600, mx: 'auto' }}>
-                <Typography variant="h6" gutterBottom>
-                  🎉 Store Connected Successfully!
-                </Typography>
-                <Typography>
-                  Your Shopify store is connected. Access your analytics dashboard to start monitoring competitors and tracking performance.
-                </Typography>
-              </Alert>
-              <ConnectButton
-                onClick={() => navigate('/dashboard')}
-                startIcon={<DashboardIcon />}
-                size="large"
-              >
-                Go to Dashboard
-              </ConnectButton>
-            </Box>
-          ) : (
-            <Box>
-              <Typography variant="h4" component="h2" gutterBottom sx={{ mb: 3 }}>
-                Connect Your Store
-              </Typography>
-              
-              {!showConnectForm ? (
-                <Box>
-                  <Typography variant="body1" color="text.secondary" sx={{ mb: 4, maxWidth: 600, mx: 'auto' }}>
-                    Connect your Shopify store to unlock AI-powered competitor discovery, real-time analytics, and automated market intelligence.
-                  </Typography>
-                  <ConnectButton
-                    onClick={() => setShowConnectForm(true)}
-                    startIcon={<StorefrontIcon />}
-                    size="large"
-                  >
-                    Connect Shopify Store
-                  </ConnectButton>
-                </Box>
-              ) : (
-                <Card sx={{ maxWidth: 500, mx: 'auto', p: 3 }}>
-                  <form onSubmit={handleSubmit}>
-                    <Stack spacing={3}>
-                      <Typography variant="h6" component="h3">
-                        Enter Your Store Details
-                      </Typography>
-                      
-                      {errorMessage && (
-                        <Alert severity="error">
-                          {errorMessage}
-                          {errorCode === 'application_cannot_be_found' && (
-                            <Box sx={{ mt: 1 }}>
-                              <Typography variant="body2">
-                                This usually means the app installation was interrupted. Please try again.
-                              </Typography>
-                            </Box>
-                          )}
-                        </Alert>
-                      )}
-                      
-                      <TextField
-                        fullWidth
-                        label="Store Domain"
-                        placeholder="your-store.myshopify.com or your-store"
-                      value={shopDomain}
-                      onChange={(e) => setShopDomain(e.target.value)}
-                      disabled={isLoading}
-                        variant="outlined"
-                        InputProps={{
-                          style: { fontSize: '16px' } // Prevent iOS zoom
-                        }}
-                      />
-                      
-                      <Stack direction="row" spacing={2}>
-                        <Button
-                          variant="outlined"
-                          onClick={() => setShowConnectForm(false)}
-                          disabled={isLoading}
-                          fullWidth
-                        >
-                          Back
-                        </Button>
-                        <ConnectButton
-                      type="submit"
-                      disabled={isLoading || !normalizeShopDomain(shopDomain)}
-                          fullWidth
-                        >
-                          {isLoading ? <CircularProgress size={20} color="inherit" /> : 'Connect Store'}
-                        </ConnectButton>
-                      </Stack>
-                    </Stack>
-                  </form>
-                </Card>
-              )}
-            </Box>
+          {/* Price */}
+          <Box sx={{ my: 3 }}>
+            <Typography
+              variant="h3"
+              component="div"
+              sx={{
+                fontWeight: 'bold',
+                background: 'linear-gradient(90deg,#fff 0%, #d1d5db 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              $19.99/month
+            </Typography>
+            <Typography variant="body1" sx={{ opacity: 0.9 }}>
+              after 3-day free trial
+            </Typography>
+          </Box>
+          {/* CTA inside banner */}
+          {!showAuthConnected && !showConnectForm && (
+            <ConnectStoreButton
+              onClick={() => setShowConnectForm(true)}
+              startIcon={<StorefrontIcon />}
+              size="large"
+            >
+              Connect Store
+            </ConnectStoreButton>
           )}
-        </Box>
+          {showConnectForm && (
+            <Card sx={{ maxWidth: 500, mx: 'auto', p: 3, mt: 4 }}>
+              <form onSubmit={handleSubmit}>
+                <Stack spacing={3}>
+                  <TextField
+                    fullWidth
+                    label="Store Domain"
+                    placeholder="your-store.myshopify.com or your-store"
+                    value={shopDomain}
+                    onChange={(e) => setShopDomain(e.target.value)}
+                    disabled={isLoading}
+                  />
+                  <ConnectStoreButton type="submit" disabled={isLoading || !normalizeShopDomain(shopDomain)}>
+                    {isLoading ? <CircularProgress size={20} color="inherit" /> : 'Connect'}
+                  </ConnectStoreButton>
+                </Stack>
+              </form>
+            </Card>
+          )}
+        </PricingBanner>
 
         {/* Enterprise-Grade Analytics Platform */}
         <Box sx={{ textAlign: 'center', my: 8 }}>
