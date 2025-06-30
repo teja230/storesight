@@ -251,22 +251,17 @@ const NotFoundPage: React.FC = () => {
   const { isAuthenticated, authLoading } = useAuth();
   const [countdown, setCountdown] = useState<number>(10);
   const [autoRedirectUrl, setAutoRedirectUrl] = useState<string>('');
-  const [showAnalytics, setShowAnalytics] = useState(true);
 
   useEffect(() => {
-    // Wait for auth loading to complete
     if (authLoading) return;
 
-    // Determine redirect destination based on authentication
     const redirectUrl = isAuthenticated ? '/dashboard' : '/';
     setAutoRedirectUrl(redirectUrl);
 
-    // Start countdown
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          // Navigate directly without loading screen
           navigate(redirectUrl, { replace: true });
           return 0;
         }
@@ -287,10 +282,6 @@ const NotFoundPage: React.FC = () => {
 
   const handleGoDashboard = () => {
     navigate('/dashboard', { replace: true });
-  };
-
-  const handleGoCompetitors = () => {
-    navigate('/competitors', { replace: true });
   };
 
   const cancelAutoRedirect = () => {
@@ -326,97 +317,71 @@ const NotFoundPage: React.FC = () => {
         <Title variant="h2">Page Not Found</Title>
         
         <Description variant="body1">
-        The page you're looking for doesn't exist or has been moved. 
-        {countdown > 0 && autoRedirectUrl && (
-          <>
-              {' '}We'll redirect you to the {isAuthenticated ? 'dashboard' : 'homepage'} automatically.
-            </>
+          The page you're looking for doesn't exist or has been moved. 
+          {countdown > 0 && autoRedirectUrl && (
+            <> We'll redirect you to the {isAuthenticated ? 'dashboard' : 'homepage'} automatically.</>
           )}
         </Description>
 
         {countdown > 0 && autoRedirectUrl && (
           <CountdownText variant="body1">
-            Redirecting to {isAuthenticated ? 'dashboard' : 'homepage'} in {countdown} seconds...
+            Redirecting in {countdown} seconds...
           </CountdownText>
         )}
 
-        {showAnalytics && (
-          <AnalyticsContainer>
-            <ChartContainer>
-              <BarChart>
-                <ChartBar height={60} delay={0.1} />
-                <ChartBar height={80} delay={0.2} />
-                <ChartBar height={45} delay={0.3} />
-                <ChartBar height={90} delay={0.4} />
-                <ChartBar height={70} delay={0.5} />
-              </BarChart>
-              <PieChart>
-                <div className="segment segment-1" />
-                <div className="segment segment-2" />
-                <div className="segment segment-3" />
-              </PieChart>
-            </ChartContainer>
-            <DataPoints>
-              <DataPoint delay={0.2}>📊</DataPoint>
-              <DataPoint delay={0.4}>📈</DataPoint>
-              <DataPoint delay={0.6}>💡</DataPoint>
-              <DataPoint delay={0.8}>🎯</DataPoint>
-            </DataPoints>
-          </AnalyticsContainer>
-        )}
+        <AnalyticsContainer>
+          <ChartContainer>
+            <BarChart>
+              <ChartBar height={60} delay={0.1} />
+              <ChartBar height={80} delay={0.2} />
+              <ChartBar height={45} delay={0.3} />
+              <ChartBar height={90} delay={0.4} />
+              <ChartBar height={70} delay={0.5} />
+            </BarChart>
+            <PieChart>
+              <div className="segment segment-1" />
+              <div className="segment segment-2" />
+              <div className="segment segment-3" />
+            </PieChart>
+          </ChartContainer>
+          <DataPoints>
+            <DataPoint delay={0.2}>📊</DataPoint>
+            <DataPoint delay={0.4}>📈</DataPoint>
+            <DataPoint delay={0.6}>💡</DataPoint>
+            <DataPoint delay={0.8}>🎯</DataPoint>
+          </DataPoints>
+        </AnalyticsContainer>
 
         <ButtonContainer>
-        {countdown > 0 && autoRedirectUrl ? (
-          <Button
-            variant="outlined"
-              onClick={cancelAutoRedirect}
-              sx={{ minWidth: 180 }}
-          >
-            Cancel Auto-redirect
-          </Button>
-        ) : (
-          <>
-            <Button
-              variant="contained"
-              startIcon={<Home />}
-              onClick={handleGoHome}
-              sx={{ minWidth: 120 }}
-            >
-              Go Home
+          {countdown > 0 && autoRedirectUrl ? (
+            <Button variant="outlined" onClick={cancelAutoRedirect} sx={{ minWidth: 180 }}>
+              Cancel Auto-redirect
             </Button>
-            <Button
-              variant="outlined"
-              startIcon={<ArrowBack />}
-              onClick={handleGoBack}
-              sx={{ minWidth: 120 }}
-            >
-              Go Back
-            </Button>
-          </>
-        )}
+          ) : (
+            <>
+              <Button variant="contained" startIcon={<Home />} onClick={handleGoHome} sx={{ minWidth: 120 }}>
+                Go Home
+              </Button>
+              <Button variant="outlined" startIcon={<ArrowBack />} onClick={handleGoBack} sx={{ minWidth: 120 }}>
+                Go Back
+              </Button>
+            </>
+          )}
         </ButtonContainer>
 
-      {isAuthenticated && !(countdown > 0 && autoRedirectUrl) && (
+        {isAuthenticated && !(countdown > 0 && autoRedirectUrl) && (
           <ButtonContainer>
-          <Button
-            variant="outlined"
-            startIcon={<Dashboard />}
-            onClick={handleGoDashboard}
-            sx={{ minWidth: 140 }}
-            color="primary"
-          >
-            Dashboard
-          </Button>
-          <Button
-            variant="outlined"
-            startIcon={<Business />}
-            onClick={handleGoCompetitors}
-            sx={{ mr: 1, mb: 1 }}
-          >
-            Market Intelligence
-          </Button>
+            <Button
+              variant="outlined"
+              startIcon={<Dashboard />}
+              onClick={handleGoDashboard}
+              sx={{ minWidth: 140 }}
+              color="primary"
+            >
+              Dashboard
+            </Button>
           </ButtonContainer>
-      )}
+        )}
       </ContentContainer>
     </NotFoundContainer>
   );

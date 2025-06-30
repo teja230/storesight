@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { Home, Refresh, Build, Warning } from '@mui/icons-material';
+import { Home, Refresh, Build } from '@mui/icons-material';
 import { styled, keyframes } from '@mui/material/styles';
 import { useServiceStatus } from '../context/ServiceStatusContext';
 
