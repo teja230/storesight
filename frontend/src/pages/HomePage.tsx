@@ -157,32 +157,32 @@ const featureCategories = [
     title: 'Real-Time Analytics',
     color: 'primary' as const,
     features: [
-      'Revenue tracking with 60-day timeseries data',
-      '7 advanced chart types (Area, Bar, Candlestick, Waterfall)',
-      'Order analytics with pagination support',
-      'Conversion rate tracking and benchmarking'
+      'Track revenue trends with 60-day historical data',
+      'Monitor orders, products, and inventory in real-time',
+      'View conversion rates and customer behavior insights',
+      'Get automated alerts for important business events'
     ]
   },
   {
     icon: <GroupIcon />,
-    title: 'Multi-Session Support',
+    title: 'Team Collaboration',
     color: 'secondary' as const,
     features: [
-      'Concurrent access from multiple devices',
-      'Session-based notification privacy',
-      'Team collaboration without conflicts',
-      'Secure session isolation & management'
+      'Multiple team members can access simultaneously',
+      'Private notifications for each team member',
+      'No conflicts when working from different devices',
+      'Secure session management for team privacy'
     ]
   },
   {
     icon: <PsychologyIcon />,
-    title: 'AI Market Intelligence',
+    title: 'Competitor Intelligence',
     color: 'info' as const,
     features: [
-      'Automated competitor discovery via 3 search APIs',
-      'Daily competitor monitoring & price tracking',
-      'Cost-optimized multi-provider architecture (97% savings)',
-      'Smart suggestion system with approval workflow'
+      'Automatically discover your competitors',
+      'Track competitor pricing changes in real-time',
+      'Get notified when competitors adjust prices',
+      'Monitor competitor inventory and stock levels'
     ]
   },
   {
@@ -190,50 +190,50 @@ const featureCategories = [
     title: 'Enterprise Security',
     color: 'warning' as const,
     features: [
-      'GDPR/CCPA compliance with audit logging',
-      'Data privacy controls & customer consent tracking',
-      'TLS 1.3 encryption & secure session management',
-      'Comprehensive compliance reporting'
+      'GDPR and CCPA compliance built-in',
+      'Complete audit trail of all data access',
+      'Customer data privacy controls',
+      'Secure data export and deletion options'
     ]
   }
 ];
 
 // Updated feature list based on actual backend endpoints and capabilities
 const features = [
-  'Real-time revenue analytics with 60-day historical data',
-  'Multi-session concurrent access with privacy isolation',
-  'AI-powered competitor discovery using 3 search providers',
-  'Advanced order analytics with pagination & filtering',
-  'Conversion rate tracking with industry benchmarking',
-  'Automated competitor price monitoring & alerts',
-  'Low inventory tracking with intelligent notifications',
-  'New product analytics with 30-day tracking',
+  'Real-time revenue tracking with 60-day historical trends',
+  'Multi-user access with private session management',
+  'Automated competitor discovery and price monitoring',
+  'Advanced order analytics with filtering and search',
+  'Conversion rate tracking with industry benchmarks',
+  'Low inventory alerts and stock level monitoring',
+  'New product analytics and performance tracking',
   'Comprehensive audit logging for compliance',
-  'GDPR/CCPA data privacy controls & reporting',
-  'Session-based notification system',
-  'Cost-optimized search API with 97% cost savings',
-  'Background competitor discovery worker',
-  'Smart suggestion approval workflow',
-  'Data export capabilities for compliance',
-  'Enterprise-grade security & encryption'
+  'Customer data privacy controls and consent management',
+  'Session-based notification system for team privacy',
+  'Automated price change alerts from competitors',
+  'Background competitor monitoring and discovery',
+  'Smart competitor suggestion and approval workflow',
+  'Data export capabilities for business reporting',
+  'Enterprise-grade security and encryption',
+  'Mobile-responsive dashboard for on-the-go access'
 ];
 
 // More realistic testimonials based on actual features
 const testimonials = [
   {
-    text: "ShopGauge's multi-session support lets my team work from different locations without stepping on each other. The real-time revenue charts show trends we never noticed before.",
+    text: "ShopGauge's team collaboration features let my marketing and sales teams work together without stepping on each other. The real-time revenue tracking shows us exactly where our growth is coming from.",
     author: "Sarah Chen, E-commerce Manager",
     metric: "Team productivity increased 35%",
     color: 'primary' as const
   },
   {
-    text: "The AI competitor discovery found 12 competitors I didn't know existed. The automated price monitoring saves me hours each week.",
+    text: "The competitor monitoring is incredible! I discovered 12 competitors I didn't know existed, and now I get alerts whenever they change prices. It's like having a market research team working 24/7.",
     author: "Mike Rodriguez, Store Owner",
     metric: "Discovered 12 new competitors automatically",
     color: 'secondary' as const
   },
   {
-    text: "GDPR compliance was a nightmare until ShopGauge. The audit logging and data privacy controls give me peace of mind with European customers.",
+    text: "GDPR compliance was a nightmare until ShopGauge. The audit logging and privacy controls give me peace of mind when selling to European customers. Everything is documented and compliant.",
     author: "Emma Thompson, Compliance Officer",
     metric: "100% GDPR compliance achieved",
     color: 'info' as const
@@ -242,28 +242,28 @@ const testimonials = [
 
 const faqs = [
   {
-    question: "How does the AI competitor discovery work?",
-    answer: "Our system uses 3 different search APIs (Scrapingdog, Serper, SerpAPI) to automatically find competitors based on your product catalog. It runs daily scans and provides a 97% cost savings compared to premium-only solutions through intelligent provider switching."
+    question: "How does the competitor discovery work?",
+    answer: "Our system automatically finds your competitors by analyzing your product catalog and searching for similar businesses. It runs daily scans and notifies you of new competitors, price changes, and inventory updates."
   },
   {
     question: "What analytics data can I access?",
-    answer: "You get 60-day revenue timeseries, order analytics, conversion rates, inventory tracking, new product analytics, and comprehensive competitor pricing data. All data is cached intelligently for fast loading."
+    answer: "You get comprehensive business insights including 60-day revenue trends, order analytics, conversion rates, inventory tracking, new product performance, and detailed competitor pricing data. All data is updated in real-time."
   },
   {
-    question: "How does multi-session support work?",
-    answer: "Multiple team members can access your dashboard simultaneously from different devices. Each session is isolated for privacy, and notifications are scoped to individual sessions to prevent conflicts."
+    question: "How does team collaboration work?",
+    answer: "Multiple team members can access your dashboard simultaneously from different devices. Each person gets their own private session with personalized notifications, so there's no interference between team members."
   },
   {
     question: "Is my data secure and compliant?",
-    answer: "Yes, we're fully GDPR/CCPA compliant with comprehensive audit logging, data privacy controls, TLS 1.3 encryption, and customer consent tracking. You can export or delete data anytime."
+    answer: "Yes, we're fully GDPR/CCPA compliant with comprehensive audit logging, data privacy controls, TLS encryption, and customer consent tracking. You can export or delete customer data anytime."
   },
   {
     question: "How much does competitor monitoring cost?",
-    answer: "Our cost-optimized system reduces API costs by 97% compared to premium providers. We use intelligent caching and provider switching to minimize costs while maintaining accuracy."
+    answer: "Our intelligent system optimizes costs while maintaining accuracy. We use multiple data sources and smart caching to provide comprehensive competitor monitoring at a fraction of the cost of premium solutions."
   },
   {
     question: "Can I track inventory and new products?",
-    answer: "Absolutely! We track low inventory items, monitor new products added in the last 30 days, and provide intelligent notifications for inventory management."
+    answer: "Absolutely! We track low inventory items, monitor new products added in the last 30 days, and provide intelligent notifications for inventory management and product performance."
   }
 ];
 
@@ -372,8 +372,8 @@ const HomePage = () => {
           </Fade>
           <Fade in={true} timeout={1500}>
             <Typography variant={isMobile ? 'body1' : 'h6'} sx={{ mb: 4, maxWidth: '800px', mx: 'auto' }}>
-              AI-powered analytics platform with automated competitor discovery, multi-session support, and enterprise-grade compliance.
-              Transform your Shopify store with real-time insights and intelligent market intelligence.
+              Transform your Shopify store with real-time analytics, automated competitor monitoring, and team collaboration tools. 
+              Make data-driven decisions with comprehensive insights that help you stay ahead of the competition.
             </Typography>
           </Fade>
         </Container>
@@ -389,10 +389,10 @@ const HomePage = () => {
             3-day free trial • No credit card required
           </Typography>
           <Typography variant="body1" sx={{ opacity: 0.9, mb: 3 }}>
-            Everything you need to dominate your market with AI-powered competitor intelligence
+            Everything you need to grow your business with data-driven insights and competitive intelligence
           </Typography>
           <Chip 
-            label="97% cost savings vs premium providers" 
+            label="Complete business intelligence platform" 
             sx={{ 
               bgcolor: 'rgba(255, 255, 255, 0.2)', 
               color: 'inherit',
