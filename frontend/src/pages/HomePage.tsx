@@ -407,12 +407,12 @@ const HomePage = () => {
                 </Typography>
               </Box>
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                <ConnectStoreButton onClick={() => navigate('/dashboard')}>
+                <ConnectStoreButton onClick={() => navigate('/dashboard')} startIcon={<DashboardIcon />}>
                   Go to Dashboard
                 </ConnectStoreButton>
                 <ConnectStoreButton onClick={() => {
                   setShowConnectForm(true);
-                }} sx={{ bgcolor: 'rgba(255,255,255,0.8)', color: '#ef4444' }}>
+                }} startIcon={<SwapHorizIcon />} sx={{ bgcolor: 'rgba(255,255,255,0.8)', color: '#ef4444' }}>
                   Switch Store
                 </ConnectStoreButton>
               </Stack>
@@ -463,7 +463,7 @@ const HomePage = () => {
               <FeatureCard key={index} elevation={2}>
                 <CardContent sx={{ p: 4 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                    <Avatar sx={{ bgcolor: `${category.color}.main`, mr: 2, width: 48, height: 48 }}>
+                    <Avatar sx={{ bgcolor: (theme) => theme.palette[category.color].main, mr: 2, width: 48, height: 48 }}>
                       {category.icon}
                     </Avatar>
                     <Typography variant="h6" component="h3" sx={{ fontWeight: 'bold' }}>
