@@ -565,7 +565,7 @@ const LegendChip = styled(Box)(({ theme }: { theme: Theme }) => ({
   border: `1px solid ${theme.palette.primary.main}20`,
 }));
 
-const LegendDot = styled(Box)<{ color: string }>(({ theme, color }) => ({
+const LegendDot = styled(Box)<{ color: string }>(({ theme, color }: { theme: Theme; color: string }) => ({
   width: '8px',
   height: '8px',
   borderRadius: '50%',
@@ -903,11 +903,11 @@ const DashboardPage = () => {
     if (!isAuthenticated || !shop) {
       console.log('Dashboard: Skipping revenue fetch - not authenticated or no shop');
       setCardErrors(prev => ({ ...prev, revenue: 'Authentication required' }));
-      setCardLoading(prev => ({ ...prev, revenue: false }));
+      setCardLoading((prev: CardLoadingState) => ({ ...prev, revenue: false }));
       return;
     }
 
-    setCardLoading(prev => ({ ...prev, revenue: true }));
+    setCardLoading((prev: CardLoadingState) => ({ ...prev, revenue: true }));
     setCardErrors(prev => ({ ...prev, revenue: null }));
     
     try {
@@ -988,7 +988,7 @@ const DashboardPage = () => {
         : 'Failed to load revenue data';
       setCardErrors(prev => ({ ...prev, revenue: errorMessage }));
     } finally {
-      setCardLoading(prev => ({ ...prev, revenue: false }));
+      setCardLoading((prev: CardLoadingState) => ({ ...prev, revenue: false }));
     }
   }, [isAuthenticated, shop, checkCacheAndFetch]);
 
@@ -997,11 +997,11 @@ const DashboardPage = () => {
     if (!isAuthenticated || !shop) {
       console.log('Dashboard: Skipping products fetch - not authenticated or no shop');
       setCardErrors(prev => ({ ...prev, products: 'Authentication required' }));
-      setCardLoading(prev => ({ ...prev, products: false }));
+      setCardLoading((prev: CardLoadingState) => ({ ...prev, products: false }));
       return;
     }
 
-    setCardLoading(prev => ({ ...prev, products: true }));
+    setCardLoading((prev: CardLoadingState) => ({ ...prev, products: true }));
     setCardErrors(prev => ({ ...prev, products: null }));
     
     try {
@@ -1030,7 +1030,7 @@ const DashboardPage = () => {
         : 'Failed to load products data';
       setCardErrors(prev => ({ ...prev, products: errorMessage }));
     } finally {
-      setCardLoading(prev => ({ ...prev, products: false }));
+      setCardLoading((prev: CardLoadingState) => ({ ...prev, products: false }));
     }
   }, [isAuthenticated, shop, checkCacheAndFetch]);
 
@@ -1039,11 +1039,11 @@ const DashboardPage = () => {
     if (!isAuthenticated || !shop) {
       console.log('Dashboard: Skipping inventory fetch - not authenticated or no shop');
       setCardErrors(prev => ({ ...prev, inventory: 'Authentication required' }));
-      setCardLoading(prev => ({ ...prev, inventory: false }));
+      setCardLoading((prev: CardLoadingState) => ({ ...prev, inventory: false }));
       return;
     }
 
-    setCardLoading(prev => ({ ...prev, inventory: true }));
+    setCardLoading((prev: CardLoadingState) => ({ ...prev, inventory: true }));
     setCardErrors(prev => ({ ...prev, inventory: null }));
     
     try {
@@ -1072,7 +1072,7 @@ const DashboardPage = () => {
         : 'Failed to load inventory data';
       setCardErrors(prev => ({ ...prev, inventory: errorMessage }));
     } finally {
-      setCardLoading(prev => ({ ...prev, inventory: false }));
+      setCardLoading((prev: CardLoadingState) => ({ ...prev, inventory: false }));
     }
   }, [isAuthenticated, shop, checkCacheAndFetch]);
 
@@ -1081,11 +1081,11 @@ const DashboardPage = () => {
     if (!isAuthenticated || !shop) {
       console.log('Dashboard: Skipping new products fetch - not authenticated or no shop');
       setCardErrors(prev => ({ ...prev, newProducts: 'Authentication required' }));
-      setCardLoading(prev => ({ ...prev, newProducts: false }));
+      setCardLoading((prev: CardLoadingState) => ({ ...prev, newProducts: false }));
       return;
     }
 
-    setCardLoading(prev => ({ ...prev, newProducts: true }));
+    setCardLoading((prev: CardLoadingState) => ({ ...prev, newProducts: true }));
     setCardErrors(prev => ({ ...prev, newProducts: null }));
     
     try {
@@ -1114,7 +1114,7 @@ const DashboardPage = () => {
         : 'Failed to load new products data';
       setCardErrors(prev => ({ ...prev, newProducts: errorMessage }));
     } finally {
-      setCardLoading(prev => ({ ...prev, newProducts: false }));
+      setCardLoading((prev: CardLoadingState) => ({ ...prev, newProducts: false }));
     }
   }, [isAuthenticated, shop, checkCacheAndFetch]);
 
@@ -1123,11 +1123,11 @@ const DashboardPage = () => {
     if (!isAuthenticated || !shop) {
       console.log('Dashboard: Skipping insights fetch - not authenticated or no shop');
       setCardErrors(prev => ({ ...prev, insights: 'Authentication required' }));
-      setCardLoading(prev => ({ ...prev, insights: false }));
+      setCardLoading((prev: CardLoadingState) => ({ ...prev, insights: false }));
       return;
     }
 
-    setCardLoading(prev => ({ ...prev, insights: true }));
+    setCardLoading((prev: CardLoadingState) => ({ ...prev, insights: true }));
     setCardErrors(prev => ({ ...prev, insights: null }));
     
     try {
@@ -1170,7 +1170,7 @@ const DashboardPage = () => {
       }
       setCardErrors(prev => ({ ...prev, insights: 'Failed to load insights data' }));
     } finally {
-      setCardLoading(prev => ({ ...prev, insights: false }));
+      setCardLoading((prev: CardLoadingState) => ({ ...prev, insights: false }));
     }
   }, [isAuthenticated, shop, navigate, checkCacheAndFetch]);
 
@@ -1179,11 +1179,11 @@ const DashboardPage = () => {
     if (!isAuthenticated || !shop) {
       console.log('Dashboard: Skipping abandoned carts fetch - not authenticated or no shop');
       setCardErrors(prev => ({ ...prev, abandonedCarts: 'Authentication required' }));
-      setCardLoading(prev => ({ ...prev, abandonedCarts: false }));
+      setCardLoading((prev: CardLoadingState) => ({ ...prev, abandonedCarts: false }));
       return;
     }
 
-    setCardLoading(prev => ({ ...prev, abandonedCarts: true }));
+    setCardLoading((prev: CardLoadingState) => ({ ...prev, abandonedCarts: true }));
     setCardErrors(prev => ({ ...prev, abandonedCarts: null }));
     
     try {
@@ -1232,7 +1232,7 @@ const DashboardPage = () => {
         : 'Failed to load abandoned carts data';
       setCardErrors(prev => ({ ...prev, abandonedCarts: errorMessage }));
     } finally {
-      setCardLoading(prev => ({ ...prev, abandonedCarts: false }));
+      setCardLoading((prev: CardLoadingState) => ({ ...prev, abandonedCarts: false }));
     }
   }, [checkCacheAndFetch]);
 
@@ -1242,11 +1242,11 @@ const DashboardPage = () => {
     if (!isAuthenticated || !shop) {
       console.log('Dashboard: Skipping orders fetch - not authenticated or no shop');
       setCardErrors(prev => ({ ...prev, orders: 'Authentication required' }));
-      setCardLoading(prev => ({ ...prev, orders: false }));
+      setCardLoading((prev: CardLoadingState) => ({ ...prev, orders: false }));
       return;
     }
 
-    setCardLoading(prev => ({ ...prev, orders: true }));
+    setCardLoading((prev: CardLoadingState) => ({ ...prev, orders: true }));
     setCardErrors(prev => ({ ...prev, orders: null }));
     
     try {
@@ -1416,7 +1416,7 @@ const DashboardPage = () => {
         : 'Failed to load orders data';
       setCardErrors(prev => ({ ...prev, orders: errorMessage }));
     } finally {
-      setCardLoading(prev => ({ ...prev, orders: false }));
+      setCardLoading((prev: CardLoadingState) => ({ ...prev, orders: false }));
     }
   }, [isAuthenticated, shop, checkCacheAndFetch]);
 
