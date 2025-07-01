@@ -301,13 +301,17 @@ interface Product {
   price?: string; // product price
 }
 
-interface Order {
+// Extended to include fields referenced by client-side analytics calculations
+export interface Order {
   id: string;
   created_at: string;
   total_price: number;
+  name?: string;
+  financial_status?: string;
+  fulfillment_status?: string;
   customer?: {
-    first_name: string;
-    last_name: string;
+    first_name?: string;
+    last_name?: string;
   };
 }
 
@@ -1396,7 +1400,7 @@ const DashboardPage = () => {
         const productCount = prev?.topProducts?.length || 0;
         const { conversionRate, abandonedCarts } = calculateAnalyticsMetrics(ordersArray, productCount);
 
-        const newState = {
+        const newState: DashboardInsight = {
           ...prev!,
           orders: ordersArray,
           recentOrders: recent,
@@ -1405,7 +1409,7 @@ const DashboardPage = () => {
           conversionRate,
           conversionRateDelta: 0,
           abandonedCarts,
-        } as typeof prev;
+        };
 
         console.log('[Orders] Updated insights state:', {
           ordersCount: newState.orders.length,
@@ -2093,8 +2097,8 @@ const DashboardPage = () => {
       }
 
       // Treat certain financial_status values as "abandoned"/ "incomplete".
-      const abandonedCarts = orders.filter((o: any) => {
-        const status = (o?.financial_status || '').toString().toLowerCase();
+      const abandonedCarts = orders.filter((o: Order) => {
+        const status = (o.financial_status || '').toLowerCase();
         return [
           'pending',
           'voided',
