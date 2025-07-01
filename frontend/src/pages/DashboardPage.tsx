@@ -1841,7 +1841,7 @@ const DashboardPage = () => {
                 conversionRate: unified.conversionRate || 0,
                 abandonedCarts: unified.abandonedCarts || 0
               }));
-              setCardLoading(prev => ({
+              setCardLoading((prev: CardLoadingState) => ({
                 ...prev,
                 revenue: false,
                 products: false,
