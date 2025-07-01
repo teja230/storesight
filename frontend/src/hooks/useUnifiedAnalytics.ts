@@ -3,6 +3,7 @@ import { getCacheKey, CACHE_VERSION } from '../utils/cacheUtils';
 import { fetchWithAuth } from '../api';
 
 interface HistoricalData {
+  kind: 'historical';
   date: string;
   revenue: number;
   orders_count: number;
@@ -11,6 +12,7 @@ interface HistoricalData {
 }
 
 interface PredictionData {
+  kind: 'prediction';
   date: string;
   revenue: number;
   orders_count: number;
@@ -234,6 +236,7 @@ const useUnifiedAnalytics = (
         const avgOrderValue = ordersCount > 0 ? revenue / ordersCount : 0;
 
         historical.push({
+          kind: 'historical',
           date,
           revenue,
           orders_count: ordersCount,
@@ -264,6 +267,7 @@ const useUnifiedAnalytics = (
           const predictedOrders = Math.max(0, Math.round(avgOrders * trendFactor));
 
           predictions.push({
+            kind: 'prediction',
             date: dateStr,
             revenue: predictedRevenue,
             orders_count: predictedOrders,

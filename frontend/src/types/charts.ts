@@ -5,6 +5,7 @@ export interface RevenuePoint {
 }
 
 export interface HistoricalPoint {
+  kind: 'historical';
   date: string; // YYYY-MM-DD
   revenue: number;
   orders_count: number;
@@ -12,7 +13,8 @@ export interface HistoricalPoint {
   avg_order_value: number;
 }
 
-export interface PredictionPoint extends HistoricalPoint {
+export interface PredictionPoint extends Omit<HistoricalPoint, 'kind'> {
+  kind: 'prediction';
   confidence_interval: {
     revenue_min: number;
     revenue_max: number;
