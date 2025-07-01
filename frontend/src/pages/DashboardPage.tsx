@@ -1622,46 +1622,40 @@ const DashboardPage = () => {
       console.log('🧪 CACHE DEBUG: Current cache keys:', Object.keys(cache).filter(k => k !== 'version' && k !== 'shop'));
       
       try {
-        // Start all API calls in parallel instead of sequential
-        const promises = [
-          fetchRevenueData().catch(err => {
-            console.error('❌ Revenue fetch failed:', err);
-            return null; // Don't fail the entire load for one error
-          }),
-          fetchProductsData().catch(err => {
-            console.error('❌ Products fetch failed:', err);
-            return null;
-          }),
-          fetchInventoryData().catch(err => {
-            console.error('❌ Inventory fetch failed:', err);
-            return null;
-          }),
-          fetchNewProductsData().catch(err => {
-            console.error('❌ New products fetch failed:', err);
-            return null;
-          }),
-          fetchInsightsData().catch(err => {
-            console.error('❌ Insights fetch failed:', err);
-            return null;
-          }),
-          fetchAbandonedCartsData().catch(err => {
-            console.error('❌ Abandoned carts fetch failed:', err);
-            return null;
-          })
-        ];
-        
-        // Wait for critical data to load in parallel
-        const results = await Promise.allSettled(promises);
-        
-        // Log results for debugging
-        results.forEach((result, index) => {
-          const dataTypes = ['revenue', 'products', 'inventory', 'newProducts', 'insights', 'abandonedCarts'];
-          if (result.status === 'rejected') {
-            console.error(`❌ Dashboard: ${dataTypes[index]} loading failed:`, result.reason);
-          } else {
-            console.log(`✅ Dashboard: ${dataTypes[index]} loading completed successfully`);
-          }
-        });
+        // Fetch aggregated analytics in a single request to minimise API round-trips
+        const unifiedResp = await retryWithBackoff(() => fetchWithAuth('/api/analytics/unified'));
+        const unifiedData = await unifiedResp.json();
+
+        if (!unifiedData.error) {
+          console.log('✅ Unified analytics payload received');
+
+          // Update cache entries so individual card loaders can reuse them without extra calls
+          const timestamp = Date.now();
+          const lastUpdated = unifiedData.lastUpdated ? new Date(unifiedData.lastUpdated) : new Date();
+
+          const newCache: Partial<DashboardCache> = {
+            revenue: { data: unifiedData.revenue || {}, timestamp, lastUpdated, version: CACHE_VERSION, shop },
+            products: { data: { products: unifiedData.products || [] }, timestamp, lastUpdated, version: CACHE_VERSION, shop },
+            inventory: { data: { lowInventory: unifiedData.lowInventory || 0 }, timestamp, lastUpdated, version: CACHE_VERSION, shop },
+            newProducts: { data: { newProducts: unifiedData.newProducts || 0 }, timestamp, lastUpdated, version: CACHE_VERSION, shop },
+            insights: { data: { conversionRate: unifiedData.conversionRate || 0 }, timestamp, lastUpdated, version: CACHE_VERSION, shop },
+            abandonedCarts: { data: { abandonedCarts: unifiedData.abandonedCarts || 0 }, timestamp, lastUpdated, version: CACHE_VERSION, shop }
+          };
+          setCache(prev => ({ ...prev, ...newCache } as DashboardCache));
+
+          setInsights(prev => ({
+            ...prev!,
+            totalRevenue: unifiedData.revenue?.totalRevenue || 0,
+            timeseries: unifiedData.revenue?.timeseries || [],
+            topProducts: unifiedData.products || [],
+            lowInventory: unifiedData.lowInventory || 0,
+            newProducts: unifiedData.newProducts || 0,
+            conversionRate: unifiedData.conversionRate || 0,
+            abandonedCarts: unifiedData.abandonedCarts || 0
+          }));
+        } else {
+          console.warn('Unified analytics error:', unifiedData.error);
+        }
         
         // Orders data can be loaded slightly delayed to reduce initial load
         setTimeout(() => {
@@ -1819,13 +1813,47 @@ const DashboardPage = () => {
       
       // Trigger fresh data fetches for all cards
       await Promise.all([
-        fetchRevenueData(true),
-        fetchProductsData(true),
-        fetchInventoryData(true),
-        fetchNewProductsData(true),
-        fetchInsightsData(true),
-        fetchOrdersData(true),
-        fetchAbandonedCartsData(true)
+        (async () => {
+          try {
+            const resp = await retryWithBackoff(() => fetchWithAuth('/api/analytics/unified'));
+            const unified = await resp.json();
+            if (!unified.error) {
+              const timestamp = Date.now();
+              const lastUpdated = unified.lastUpdated ? new Date(unified.lastUpdated) : new Date();
+              const newCache: Partial<DashboardCache> = {
+                revenue: { data: unified.revenue || {}, timestamp, lastUpdated, version: CACHE_VERSION, shop },
+                products: { data: { products: unified.products || [] }, timestamp, lastUpdated, version: CACHE_VERSION, shop },
+                inventory: { data: { lowInventory: unified.lowInventory || 0 }, timestamp, lastUpdated, version: CACHE_VERSION, shop },
+                newProducts: { data: { newProducts: unified.newProducts || 0 }, timestamp, lastUpdated, version: CACHE_VERSION, shop },
+                insights: { data: { conversionRate: unified.conversionRate || 0 }, timestamp, lastUpdated, version: CACHE_VERSION, shop },
+                abandonedCarts: { data: { abandonedCarts: unified.abandonedCarts || 0 }, timestamp, lastUpdated, version: CACHE_VERSION, shop }
+              };
+              setCache(prev => ({ ...prev, ...newCache } as DashboardCache));
+              setInsights(prev => ({
+                ...prev!,
+                totalRevenue: unified.revenue?.totalRevenue || 0,
+                timeseries: unified.revenue?.timeseries || [],
+                topProducts: unified.products || [],
+                lowInventory: unified.lowInventory || 0,
+                newProducts: unified.newProducts || 0,
+                conversionRate: unified.conversionRate || 0,
+                abandonedCarts: unified.abandonedCarts || 0
+              }));
++              setCardLoading(prev => ({
++                ...prev,
++                revenue: false,
++                products: false,
++                inventory: false,
++                newProducts: false,
++                insights: false,
++                abandonedCarts: false
++              }));
+            }
+          } catch (e) {
+            console.error('Unified analytics refresh failed', e);
+          }
+        })(),
+        fetchOrdersData(true)
       ]);
       
       notifications.showSuccess('✅ Dashboard data has been updated.', { duration: 3000, category: 'Dashboard' });
