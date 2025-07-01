@@ -5,7 +5,7 @@ import { MetricCard } from '../components/ui/MetricCard';
 import { fetchWithAuth, retryWithBackoff } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { styled } from '@mui/material/styles';
+import { styled, type Theme } from '@mui/material/styles';
 import { OpenInNew, Refresh, Storefront, ListAlt, Inventory2 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { useNotifications } from '../hooks/useNotifications';
