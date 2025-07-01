@@ -1933,15 +1933,41 @@ const DashboardPage = () => {
     };
 
     const handleRateLimitPolling = () => {
-      if (hasRateLimit) {
-        console.log('⏰ Rate limit detected - starting 60-second polling');
-        const pollInterval = setInterval(() => {
-          console.log('🔄 Polling for rate limit recovery...');
-          handleRefreshAll();
-        }, 60000); // 60 seconds
+      if (!hasRateLimit) return undefined;
 
-        return () => clearInterval(pollInterval);
-      }
+      // Exponential back-off: 1 min → 2 min → 4 min → capped at 5 min
+      let attempt = 0;
+      const MAX_INTERVAL = 5 * 60 * 1000; // 5 minutes
+
+      const computeDelay = () => {
+        // 60s * 2^attempt but cap at MAX_INTERVAL
+        return Math.min(60000 * Math.pow(2, attempt), MAX_INTERVAL);
+      };
+
+      const scheduleNext = () => {
+        const delay = computeDelay();
+        console.log(`⏰ Rate limit polling (attempt ${attempt + 1}) scheduled in ${Math.round(delay / 1000)}s`);
+
+        return setTimeout(async () => {
+          try {
+            await handleRefreshAll();
+          } finally {
+            // If still rate-limited, schedule another round with increased delay
+            if (hasRateLimit) {
+              attempt++;
+              timers.current.push(scheduleNext());
+            }
+          }
+        }, delay);
+      };
+
+      // Track active timers so we can clear them on unmount/cleanup
+      const timers: React.MutableRefObject<NodeJS.Timeout[]> = { current: [] } as any;
+      timers.current.push(scheduleNext());
+
+      return () => {
+        timers.current.forEach(clearTimeout);
+      };
     };
 
     // Listen for dashboard retry events from ErrorBoundary
