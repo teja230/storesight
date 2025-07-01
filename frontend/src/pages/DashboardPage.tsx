@@ -1391,14 +1391,27 @@ const DashboardPage = () => {
       // Handle successful data
       console.log('[Orders] Successfully processed data, updating insights');
       setInsights(prev => {
+        const ordersArray = data.rate_limited ? [] : (data.orders || data.timeseries || []);
+        const recent = data.rate_limited ? [] : (data.recentOrders || (data.timeseries || []).slice(0, 5));
+        const productCount = prev?.topProducts?.length || 0;
+        const { conversionRate, abandonedCarts } = calculateAnalyticsMetrics(ordersArray, productCount);
+
         const newState = {
           ...prev!,
-          orders: data.rate_limited ? [] : (data.orders || data.timeseries || []),
-          recentOrders: data.rate_limited ? [] : (data.recentOrders || (data.timeseries || []).slice(0, 5))
-        };
+          orders: ordersArray,
+          recentOrders: recent,
+          timeseries: data.rate_limited ? [] : (data.timeseries || []),
+          // 🔑 Unified-Analytics metrics
+          conversionRate,
+          conversionRateDelta: 0,
+          abandonedCarts,
+        } as typeof prev;
+
         console.log('[Orders] Updated insights state:', {
           ordersCount: newState.orders.length,
-          recentOrdersCount: newState.recentOrders.length
+          recentOrdersCount: newState.recentOrders.length,
+          conversionRate: newState.conversionRate,
+          abandonedCarts: newState.abandonedCarts,
         });
         return newState;
       });
@@ -1414,9 +1427,9 @@ const DashboardPage = () => {
         : 'Failed to load orders data';
       setCardErrors(prev => ({ ...prev, orders: errorMessage }));
     } finally {
-      setCardLoading(prev => ({ ...prev, orders: false }));
+      setCardLoading(prev => ({ ...prev, orders: false, insights: false, abandonedCarts: false }));
     }
-  }, [isAuthenticated, shop, checkCacheAndFetch]);
+  }, [isAuthenticated, shop, checkCacheAndFetch, calculateAnalyticsMetrics]);
 
   // Clear error states on component mount and route changes
   useEffect(() => {
@@ -2058,6 +2071,44 @@ const DashboardPage = () => {
       }, 500);
     }
   }, [isAuthReady, authLoading, isAuthenticated, shop, navigate]);
+
+  // ============================
+  // 📊 ON-THE-FLY ANALYTICS HELPERS
+  // ============================
+  /**
+   * Compute conversion rate and abandoned-cart count from the orders array.
+   * Mirrors the simple heuristic used on the backend but runs instantly on
+   * the client so the Unified Analytics cards populate even when the
+   * daily_metrics table is still empty.
+   */
+  const calculateAnalyticsMetrics = useCallback(
+    (orders: Order[] = [], productsCount: number = 0) => {
+      const totalOrders = orders.length;
+
+      // Conversion-rate heuristic (same formula as backend)
+      let conversionRate = 0;
+      if (productsCount > 0 && totalOrders > 0) {
+        const ordersPerProduct = totalOrders / productsCount;
+        conversionRate = Math.min(ordersPerProduct * 0.5, 15); // cap at 15 %
+      }
+
+      // Treat certain financial_status values as "abandoned"/ "incomplete".
+      const abandonedCarts = orders.filter((o: any) => {
+        const status = (o?.financial_status || '').toString().toLowerCase();
+        return [
+          'pending',
+          'voided',
+          'cancelled',
+          'authorized',
+          'refunded',
+          'abandoned', // custom flag we sometimes set
+        ].includes(status);
+      }).length;
+
+      return { conversionRate, abandonedCarts };
+    },
+    []
+  );
 
   if (loading) {
     return <IntelligentLoadingScreen fastMode={true} message="Loading your dashboard..." />;
