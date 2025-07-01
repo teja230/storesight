@@ -11,10 +11,12 @@ export interface HistoricalPoint {
   orders_count: number;
   conversion_rate: number; // percentage 0-100
   avg_order_value: number;
+  isPrediction?: false;
 }
 
-export interface PredictionPoint extends Omit<HistoricalPoint, 'kind'> {
+export interface PredictionPoint extends Omit<HistoricalPoint, 'kind' | 'isPrediction'> {
   kind: 'prediction';
+  isPrediction: true;
   confidence_interval: {
     revenue_min: number;
     revenue_max: number;

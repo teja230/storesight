@@ -9,6 +9,7 @@ interface HistoricalData {
   orders_count: number;
   conversion_rate: number;
   avg_order_value: number;
+  isPrediction: false;
 }
 
 interface PredictionData {
@@ -26,6 +27,7 @@ interface PredictionData {
   };
   prediction_type: string;
   confidence_score: number;
+  isPrediction: true;
 }
 
 interface UnifiedAnalyticsData {
@@ -242,6 +244,7 @@ const useUnifiedAnalytics = (
           orders_count: ordersCount,
           conversion_rate: conversionRate,
           avg_order_value: avgOrderValue,
+          isPrediction: false,
         });
       });
 
@@ -281,6 +284,7 @@ const useUnifiedAnalytics = (
             },
             prediction_type: 'trend_analysis',
             confidence_score: 0.7 + Math.random() * 0.2, // 70-90% confidence
+            isPrediction: true,
           });
         }
       }
