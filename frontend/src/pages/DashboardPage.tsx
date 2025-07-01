@@ -750,6 +750,7 @@ const DashboardPage = () => {
     refetch: refetchUnifiedAnalytics,
     isCached: unifiedAnalyticsIsCached,
     cacheAge: unifiedAnalyticsCacheAge,
+    lastUpdated: unifiedAnalyticsLastUpdated,
   } = useUnifiedAnalytics({
     days: 60,
     includePredictions: true,
@@ -1570,6 +1571,10 @@ const DashboardPage = () => {
           fetchAbandonedCartsData().catch(err => {
             console.error('❌ Abandoned carts fetch failed:', err);
             return null;
+          }),
+          fetchOrdersData().catch(err => {
+            console.error('❌ Orders fetch failed:', err);
+            return null;
           })
         ];
         
@@ -1578,7 +1583,7 @@ const DashboardPage = () => {
         
         // Log results for debugging
         results.forEach((result, index) => {
-          const dataTypes = ['revenue', 'products', 'inventory', 'newProducts', 'insights', 'abandonedCarts'];
+          const dataTypes = ['revenue', 'products', 'inventory', 'newProducts', 'insights', 'abandonedCarts', 'orders'];
           if (result.status === 'rejected') {
             console.error(`❌ Dashboard: ${dataTypes[index]} loading failed:`, result.reason);
           } else {
@@ -1586,10 +1591,7 @@ const DashboardPage = () => {
           }
         });
         
-        // Orders data can be loaded slightly delayed to reduce initial load
-        setTimeout(() => {
-          fetchOrdersData().catch(err => console.error('❌ Orders fetch failed:', err));
-        }, 100);
+        // Orders are already included in parallel promises; removed redundant delayed fetch.
         
         console.log('✅ Dashboard: Parallel data loading completed');
       } catch (error) {
@@ -2377,8 +2379,15 @@ const DashboardPage = () => {
               {/* Only render UnifiedAnalyticsChart when we have valid data or are still loading */}
               {(unifiedAnalyticsLoading || unifiedAnalyticsData || dashboardDataInitialized) ? (
                 <UnifiedAnalyticsChart
+                  key={`ua-chart-${unifiedAnalyticsLastUpdated?.getTime() || 'initial'}`}
                   data={unifiedAnalyticsData}
-                  loading={unifiedAnalyticsLoading || !dashboardDataInitialized}
+                  loading={
+                    unifiedAnalyticsLoading ||
+                    !dashboardDataInitialized ||
+                    !unifiedAnalyticsData ||
+                    !unifiedAnalyticsData.historical ||
+                    unifiedAnalyticsData.historical.length === 0
+                  }
                   error={unifiedAnalyticsError}
                   height={500}
                 />

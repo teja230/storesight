@@ -884,7 +884,15 @@ const UnifiedAnalyticsChart: React.FC<UnifiedAnalyticsChartProps> = ({
   useLayoutEffect(() => {
     if (!containerRef.current) return;
 
+    // Immediately mark container as ready if we already have width
     if (containerRef.current.offsetWidth > 0) {
+      setContainerReady(true);
+      return;
+    }
+
+    // Gracefully handle environments where ResizeObserver is not supported
+    if (typeof ResizeObserver === 'undefined') {
+      console.warn('ResizeObserver is not available in this environment – falling back to immediate render.');
       setContainerReady(true);
       return;
     }
