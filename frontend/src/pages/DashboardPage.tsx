@@ -1839,15 +1839,15 @@ const DashboardPage = () => {
                 conversionRate: unified.conversionRate || 0,
                 abandonedCarts: unified.abandonedCarts || 0
               }));
-+              setCardLoading(prev => ({
-+                ...prev,
-+                revenue: false,
-+                products: false,
-+                inventory: false,
-+                newProducts: false,
-+                insights: false,
-+                abandonedCarts: false
-+              }));
+              setCardLoading(prev => ({
+                ...prev,
+                revenue: false,
+                products: false,
+                inventory: false,
+                newProducts: false,
+                insights: false,
+                abandonedCarts: false
+              }));
             }
           } catch (e) {
             console.error('Unified analytics refresh failed', e);
