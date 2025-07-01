@@ -53,6 +53,7 @@ import {
   Stop,
 } from '@mui/icons-material';
 import LoadingIndicator from './LoadingIndicator';
+import type { TooltipProps, ChartPayload, UnifiedDatum } from '../../types/charts';
 
 interface HistoricalData {
   date: string;
@@ -282,7 +283,7 @@ const UnifiedAnalyticsChart: React.FC<UnifiedAnalyticsChartProps> = ({
     }
   };
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip: React.FC<TooltipProps<UnifiedDatum>> = ({ active, payload, label }) => {
     try {
       if (active && payload && payload.length) {
         const data = payload[0].payload;
