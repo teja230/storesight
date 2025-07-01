@@ -52,6 +52,7 @@ import {
   PlayArrow,
   Stop,
 } from '@mui/icons-material';
+import LoadingIndicator from './LoadingIndicator';
 
 interface HistoricalData {
   date: string;
@@ -864,27 +865,7 @@ const UnifiedAnalyticsChart: React.FC<UnifiedAnalyticsChartProps> = ({
   }, []);
 
   if (loading) {
-    return (
-      <Box
-        sx={{
-          height,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexDirection: 'column',
-          gap: 2,
-          backgroundColor: 'rgba(0, 0, 0, 0.02)',
-          borderRadius: 3,
-        }}
-      >
-        <div className="animate-pulse">
-          <Analytics sx={{ fontSize: 48, color: 'rgba(0, 0, 0, 0.2)' }} />
-        </div>
-        <Typography variant="body2" color="text.secondary">
-          Loading analytics data...
-        </Typography>
-      </Box>
-    );
+    return <LoadingIndicator height={height} message="Loading analytics data…" />;
   }
 
   if (error) {

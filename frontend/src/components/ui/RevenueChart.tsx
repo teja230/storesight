@@ -32,6 +32,7 @@ import {
   StackedLineChart,
   Analytics,
 } from '@mui/icons-material';
+import LoadingIndicator from './LoadingIndicator';
 
 interface RevenueData {
   created_at: string;
@@ -444,25 +445,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
 
   if (loading) {
     return (
-      <Box
-        sx={{
-          height,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexDirection: 'column',
-          gap: 2,
-          backgroundColor: 'rgba(0, 0, 0, 0.02)',
-          borderRadius: 2,
-        }}
-      >
-        <div className="animate-pulse">
-          <TrendingUp sx={{ fontSize: 48, color: 'rgba(0, 0, 0, 0.2)' }} />
-        </div>
-        <Typography variant="body2" color="text.secondary">
-          Loading revenue data...
-        </Typography>
-      </Box>
+      <LoadingIndicator height={height} message="Loading revenue data…" />
     );
   }
 
