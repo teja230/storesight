@@ -33,11 +33,9 @@ import {
   Analytics,
 } from '@mui/icons-material';
 import LoadingIndicator from './LoadingIndicator';
+import type { RevenuePoint, TooltipProps, ChartPayload } from '../../types/charts';
 
-interface RevenueData {
-  created_at: string;
-  total_price: number;
-}
+type RevenueData = RevenuePoint;
 
 interface RevenueChartProps {
   data: RevenueData[];
@@ -48,7 +46,7 @@ interface RevenueChartProps {
 
 type ChartType = 'line' | 'area' | 'bar' | 'candlestick' | 'waterfall' | 'stacked' | 'composed';
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip: React.FC<TooltipProps<RevenuePoint>> = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
       <Paper
@@ -61,26 +59,26 @@ const CustomTooltip = ({ active, payload, label }: any) => {
         }}
       >
         <Typography variant="body2" color="text.secondary" gutterBottom>
-          {new Date(label).toLocaleDateString('en-US', {
+          {new Date(label as string).toLocaleDateString('en-US', {
             weekday: 'short',
             month: 'short',
             day: 'numeric',
           })}
         </Typography>
-        {payload.map((entry: any, index: number) => (
+        {(payload as ChartPayload<RevenuePoint>[]).map((entry, index) => (
           <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-          <Box
-            sx={{
-              width: 12,
-              height: 12,
-              borderRadius: '50%',
+            <Box
+              sx={{
+                width: 12,
+                height: 12,
+                borderRadius: '50%',
                 backgroundColor: entry.color,
-            }}
-          />
-          <Typography variant="body2" fontWeight={600}>
-              {entry.name}: ${entry.value?.toLocaleString()}
-          </Typography>
-        </Box>
+              }}
+            />
+            <Typography variant="body2" fontWeight={600}>
+              {entry.name as string}: ${entry.value?.toLocaleString()}
+            </Typography>
+          </Box>
         ))}
       </Paper>
     );

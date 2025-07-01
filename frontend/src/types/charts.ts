@@ -31,6 +31,7 @@ export interface ChartPayload<T = unknown> {
   value: number;
   payload: T;
   color?: string;
+  name?: string;
 }
 
 export interface TooltipProps<T = unknown> {
