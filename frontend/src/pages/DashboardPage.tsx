@@ -700,6 +700,17 @@ const DashboardPage = () => {
   const [lastRefreshTime, setLastRefreshTime] = useState<number>(0); // Track last refresh time for debouncing
   const [debounceCountdown, setDebounceCountdown] = useState<number>(0); // Real-time countdown for debounce
 
+  // =====================================
+  // Polling management refs (typed)
+  // =====================================
+  const pollingTimersRef = useRef<NodeJS.Timeout[]>([]);
+  const rateLimitRef = useRef<boolean>(hasRateLimit);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    rateLimitRef.current = hasRateLimit;
+  }, [hasRateLimit]);
+
   // Save cache to sessionStorage whenever it changes
   useEffect(() => {
     if (shop && Object.keys(cache).length > 2) { // Only save if cache is not empty
@@ -1932,41 +1943,42 @@ const DashboardPage = () => {
       handleRefreshAll();
     };
 
-    const handleRateLimitPolling = () => {
+    /**
+     * Starts an exponential-backoff timer that attempts to refresh the dashboard
+     * while the Shopify API is rate-limited.  Polling intervals grow 1 → 2 → 4 → 5 minutes
+     * (max) to minimise cost.  Returns a cleanup function to clear all timers.
+     */
+    const handleRateLimitPolling = (): (() => void) | undefined => {
       if (!hasRateLimit) return undefined;
 
-      // Exponential back-off: 1 min → 2 min → 4 min → capped at 5 min
       let attempt = 0;
-      const MAX_INTERVAL = 5 * 60 * 1000; // 5 minutes
+      const MAX_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 
-      const computeDelay = () => {
-        // 60s * 2^attempt but cap at MAX_INTERVAL
-        return Math.min(60000 * Math.pow(2, attempt), MAX_INTERVAL);
-      };
+      const scheduleNext = (): void => {
+        const delay = Math.min(60_000 * Math.pow(2, attempt), MAX_INTERVAL_MS);
+        console.log(`⏰ Rate-limit polling (attempt ${attempt + 1}) in ${Math.round(delay / 1000)}s`);
 
-      const scheduleNext = () => {
-        const delay = computeDelay();
-        console.log(`⏰ Rate limit polling (attempt ${attempt + 1}) scheduled in ${Math.round(delay / 1000)}s`);
-
-        return setTimeout(async () => {
+        const timerId: NodeJS.Timeout = setTimeout(async () => {
           try {
             await handleRefreshAll();
           } finally {
-            // If still rate-limited, schedule another round with increased delay
-            if (hasRateLimit) {
+            // schedule another round only if rate-limit still active
+            if (rateLimitRef.current) {
               attempt++;
-              timers.current.push(scheduleNext());
+              scheduleNext();
             }
           }
         }, delay);
+
+        pollingTimersRef.current.push(timerId);
       };
 
-      // Track active timers so we can clear them on unmount/cleanup
-      const timers: React.MutableRefObject<NodeJS.Timeout[]> = { current: [] } as any;
-      timers.current.push(scheduleNext());
+      scheduleNext();
 
-      return () => {
-        timers.current.forEach(clearTimeout);
+      // Return cleanup function
+      return (): void => {
+        pollingTimersRef.current.forEach(clearTimeout);
+        pollingTimersRef.current = [];
       };
     };
 
