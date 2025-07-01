@@ -506,218 +506,59 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
         }}
       >
         <TrendingUp sx={{ fontSize: 48, color: 'rgba(0, 0, 0, 0.2)' }} />
-        <Typography variant="h6" color="text.secondary">
-          No revenue data available
-        </Typography>
         <Typography variant="body2" color="text.secondary">
-          Revenue data will appear here once you start making sales
+          No revenue data available
         </Typography>
       </Box>
     );
   }
 
+  // ============================================
+  // Ensure the chart only renders once the parent
+  // container has a measurable width (>0). This
+  // prevents Recharts from throwing runtime errors
+  // when it mounts while the container is still
+  // hidden or has width 0 (e.g. before layout or
+  // inside tabs). We observe the container with a
+  // ResizeObserver and render the ResponsiveContainer
+  // only once a valid width is detected.
+  // ============================================
+
+  const [containerReady, setContainerReady] = React.useState(false);
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
+
+  React.useLayoutEffect(() => {
+    if (!containerRef.current) return;
+
+    // If width is already available, no need to observe
+    if (containerRef.current.offsetWidth > 0) {
+      setContainerReady(true);
+      return;
+    }
+
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentRect.width > 0) {
+          setContainerReady(true);
+          ro.disconnect();
+          break;
+        }
+      }
+    });
+
+    ro.observe(containerRef.current);
+    return () => ro.disconnect();
+  }, []);
+
   return (
-    <Box sx={{ width: '100%' }}>
-      {/* Chart Header with Controls */}
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          mb: 3,
-          flexWrap: 'wrap',
-          gap: 2,
-        }}
-      >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <TrendingUp color="primary" />
-            Revenue Overview
-          </Typography>
-          <Chip
-            label={`${sanitizedData.length} ${sanitizedData.length === 1 ? 'day' : 'days'}`}
-            size="small"
-            variant="outlined"
-            color="primary"
-          />
-        </Box>
-
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          {/* Enhanced Chart Type Selector */}
-          <ToggleButtonGroup
-            value={chartType}
-            exclusive
-            onChange={(_, newType) => newType && setChartType(newType)}
-            size="small"
-            sx={{
-              backgroundColor: 'white',
-              border: '1px solid rgba(0, 0, 0, 0.1)',
-              borderRadius: 2,
-              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-              '& .MuiToggleButton-root': {
-                px: 1.5,
-                py: 1,
-                fontSize: '0.75rem',
-                textTransform: 'none',
-                fontWeight: 500,
-                border: 'none',
-                borderRadius: 1.5,
-                margin: 0.25,
-                minWidth: 'auto',
-                color: 'text.secondary',
-                backgroundColor: 'transparent',
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  backgroundColor: 'rgba(37, 99, 235, 0.08)',
-                  color: 'primary.main',
-                },
-                '&.Mui-selected': {
-                  backgroundColor: 'primary.main',
-                  color: 'white',
-                  '&:hover': {
-                    backgroundColor: 'primary.dark',
-                  },
-                },
-              },
-            }}
-          >
-            {(Object.keys(chartTypeConfig) as ChartType[]).map((type) => (
-              <ToggleButton
-                key={type}
-                value={type}
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: 0.25,
-                  minWidth: 'auto',
-                }}
-                title={chartTypeConfig[type].description}
-              >
-                {React.cloneElement(chartTypeConfig[type].icon, { 
-                  sx: { fontSize: '1rem' } 
-                })}
-                <Typography variant="caption" sx={{ fontSize: '0.65rem', lineHeight: 1 }}>
-                {chartTypeConfig[type].label}
-                </Typography>
-              </ToggleButton>
-            ))}
-          </ToggleButtonGroup>
-        </Box>
-      </Box>
-
-      {/* Enhanced Revenue Summary Stats */}
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr 1fr' },
-          gap: 2,
-          mb: 3,
-        }}
-      >
-        <Paper
-          elevation={0}
-          sx={{
-            p: 2,
-            backgroundColor: 'rgba(37, 99, 235, 0.05)',
-            border: '1px solid rgba(37, 99, 235, 0.1)',
-            borderRadius: 2,
-          }}
-        >
-          <Typography variant="body2" color="text.secondary" gutterBottom>
-            Total Revenue
-          </Typography>
-          <Typography variant="h6" color="primary" fontWeight={600}>
-            ${isNaN(totalRevenue) ? '0' : totalRevenue.toLocaleString()}
-          </Typography>
-        </Paper>
-
-        <Paper
-          elevation={0}
-          sx={{
-            p: 2,
-            backgroundColor: 'rgba(16, 185, 129, 0.05)',
-            border: '1px solid rgba(16, 185, 129, 0.1)',
-            borderRadius: 2,
-          }}
-        >
-          <Typography variant="body2" color="text.secondary" gutterBottom>
-            Average Daily
-          </Typography>
-          <Typography variant="h6" sx={{ color: 'rgb(16, 185, 129)' }} fontWeight={600}>
-            ${isNaN(averageRevenue) ? '0' : Math.round(averageRevenue).toLocaleString()}
-          </Typography>
-        </Paper>
-
-        <Paper
-          elevation={0}
-          sx={{
-            p: 2,
-            backgroundColor: 'rgba(245, 158, 11, 0.05)',
-            border: '1px solid rgba(245, 158, 11, 0.1)',
-            borderRadius: 2,
-          }}
-        >
-          <Typography variant="body2" color="text.secondary" gutterBottom>
-            Peak Day
-          </Typography>
-          <Typography variant="h6" sx={{ color: 'rgb(245, 158, 11)' }} fontWeight={600}>
-            ${isNaN(maxRevenue) ? '0' : maxRevenue.toLocaleString()}
-          </Typography>
-        </Paper>
-
-        <Paper
-          elevation={0}
-          sx={{
-            p: 2,
-            backgroundColor: 'rgba(139, 92, 246, 0.05)',
-            border: '1px solid rgba(139, 92, 246, 0.1)',
-            borderRadius: 2,
-          }}
-        >
-          <Typography variant="body2" color="text.secondary" gutterBottom>
-            Range
-          </Typography>
-          <Typography variant="h6" sx={{ color: 'rgb(139, 92, 246)' }} fontWeight={600}>
-            ${isNaN(maxRevenue - minRevenue) ? '0' : (maxRevenue - minRevenue).toLocaleString()}
-          </Typography>
-        </Paper>
-      </Box>
-
-      {/* Chart Container */}
-      <Paper
-        elevation={0}
-        sx={{
-          p: 3,
-          backgroundColor: '#fff',
-          border: '1px solid rgba(0, 0, 0, 0.05)',
-          borderRadius: 3,
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
+    <Box ref={containerRef} sx={{ width: '100%' }}>
+      {containerReady && (
         <ResponsiveContainer width="100%" height={height}>
           {renderChart()}
         </ResponsiveContainer>
-        
-        {/* Data Activity Period Indicator */}
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: 8,
-            right: 12,
-            fontSize: '0.7rem',
-            color: 'text.secondary',
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            px: 1,
-            py: 0.5,
-            borderRadius: 1,
-            border: '1px solid rgba(0, 0, 0, 0.08)',
-          }}
-        >
-          📊 Data reflects the last 60 days of activity
-        </Box>
-      </Paper>
+      )}
     </Box>
   );
-}; 
+};
+
+export default RevenueChart; 

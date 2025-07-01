@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useLayoutEffect, useRef } from 'react';
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -830,6 +830,39 @@ const UnifiedAnalyticsChart: React.FC<UnifiedAnalyticsChartProps> = ({
     }
   };
 
+  // ============================================
+  // ResizeObserver gate – only render the chart
+  // once the container has a measurable width.
+  // This prevents Recharts from throwing errors
+  // when mounted inside hidden or zero-width
+  // containers (e.g. before layout is ready).
+  // ============================================
+
+  const [containerReady, setContainerReady] = useState(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  useLayoutEffect(() => {
+    if (!containerRef.current) return;
+
+    if (containerRef.current.offsetWidth > 0) {
+      setContainerReady(true);
+      return;
+    }
+
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentRect.width > 0) {
+          setContainerReady(true);
+          ro.disconnect();
+          break;
+        }
+      }
+    });
+
+    ro.observe(containerRef.current);
+    return () => ro.disconnect();
+  }, []);
+
   if (loading) {
     return (
       <Box
@@ -890,7 +923,7 @@ const UnifiedAnalyticsChart: React.FC<UnifiedAnalyticsChartProps> = ({
   }
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box ref={containerRef} sx={{ width: '100%' }}>
       {/* Header with Controls */}
       <Box
         sx={{
@@ -1197,9 +1230,11 @@ const UnifiedAnalyticsChart: React.FC<UnifiedAnalyticsChartProps> = ({
           overflow: 'hidden',
         }}
       >
-        <ResponsiveContainer width="100%" height={height}>
-          {renderChart()}
-        </ResponsiveContainer>
+        {containerReady && (
+          <ResponsiveContainer width="100%" height={height}>
+            {renderChart()}
+          </ResponsiveContainer>
+        )}
         
         {/* Watermark */}
         <Box
