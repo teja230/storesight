@@ -25,6 +25,10 @@
       "node",
       "react",
       "react-dom"
+    ],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./node_modules/@mui/types"
     ]
   },
   "include": [
