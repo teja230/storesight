@@ -156,8 +156,30 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
     },
   };
 
-  // Unique id prefix to avoid duplicate gradient IDs across multiple charts
   const gradientIdPrefix = React.useMemo(() => `rev-${Math.random().toString(36).substring(2,8)}`, []);
+
+  // Layout-aware container hooks declared early to satisfy rules-of-hooks
+  const [containerReady, setContainerReady] = React.useState(false);
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
+
+  React.useLayoutEffect(() => {
+    if (!containerRef.current) return;
+    if (containerRef.current.offsetWidth > 0) {
+      setContainerReady(true);
+      return;
+    }
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentRect.width > 0) {
+          setContainerReady(true);
+          ro.disconnect();
+          break;
+        }
+      }
+    });
+    ro.observe(containerRef.current);
+    return () => ro.disconnect();
+  }, []);
 
   // Validate and sanitize input data to prevent runtime errors
   const sanitizedData = React.useMemo(() => {
@@ -493,43 +515,6 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
       </Box>
     );
   }
-
-  // ============================================
-  // Ensure the chart only renders once the parent
-  // container has a measurable width (>0). This
-  // prevents Recharts from throwing runtime errors
-  // when it mounts while the container is still
-  // hidden or has width 0 (e.g. before layout or
-  // inside tabs). We observe the container with a
-  // ResizeObserver and render the ResponsiveContainer
-  // only once a valid width is detected.
-  // ============================================
-
-  const [containerReady, setContainerReady] = React.useState(false);
-  const containerRef = React.useRef<HTMLDivElement | null>(null);
-
-  React.useLayoutEffect(() => {
-    if (!containerRef.current) return;
-
-    // If width is already available, no need to observe
-    if (containerRef.current.offsetWidth > 0) {
-      setContainerReady(true);
-      return;
-    }
-
-    const ro = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.contentRect.width > 0) {
-          setContainerReady(true);
-          ro.disconnect();
-          break;
-        }
-      }
-    });
-
-    ro.observe(containerRef.current);
-    return () => ro.disconnect();
-  }, []);
 
   return (
     <Box ref={containerRef} sx={{ width: '100%' }}>
