@@ -25,6 +25,11 @@ export interface PredictionPoint extends Omit<HistoricalPoint, 'kind' | 'isPredi
   };
   prediction_type: string;
   confidence_score: number; // 0 – 1
+  // Flattened helpers used in tooltip
+  revenue_min?: number;
+  revenue_max?: number;
+  orders_min?: number;
+  orders_max?: number;
 }
 
 export type UnifiedDatum = HistoricalPoint | PredictionPoint;

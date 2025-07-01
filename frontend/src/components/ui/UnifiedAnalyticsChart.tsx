@@ -53,7 +53,7 @@ import {
   Stop,
 } from '@mui/icons-material';
 import LoadingIndicator from './LoadingIndicator';
-import type { TooltipProps, ChartPayload, UnifiedDatum } from '../../types/charts';
+import type { TooltipProps, ChartPayload, UnifiedDatum, PredictionPoint } from '../../types/charts';
 
 interface HistoricalData {
   date: string;

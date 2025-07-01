@@ -1982,15 +1982,15 @@ const DashboardPage = () => {
       };
     };
 
+    // Start / restart rate-limit polling whenever rate-limit state flips to true.
+    const stopPolling = handleRateLimitPolling();
+ 
     // Listen for dashboard retry events from ErrorBoundary
     window.addEventListener('dashboardRetry', handleDashboardRetry);
-    
-    // Start polling if rate limited
-    const cleanupPolling = handleRateLimitPolling();
-
+ 
     return () => {
       window.removeEventListener('dashboardRetry', handleDashboardRetry);
-      if (cleanupPolling) cleanupPolling();
+      if (stopPolling) stopPolling();
     };
   }, [hasRateLimit, handleRefreshAll]);
 
