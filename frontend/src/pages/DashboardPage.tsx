@@ -142,30 +142,30 @@ const DashboardHeader = styled(Box)(({ theme }: { theme: Theme }) => ({
   },
 }));
 
-const HeaderContent = styled(Box)(({ theme }) => ({
+const HeaderContent = styled(Box)(({ theme }: ThemeProps) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(2),
 }));
 
-const HeaderIcon = styled(Storefront)(({ theme }) => ({
+const HeaderIcon = styled(Storefront)(({ theme }: ThemeProps) => ({
   fontSize: 32,
   color: theme.palette.primary.main,
 }));
 
-const HeaderTitle = styled(Typography)(({ theme }) => ({
+const HeaderTitle = styled(Typography)(({ theme }: ThemeProps) => ({
   fontSize: '1.5rem',
   fontWeight: 600,
   color: theme.palette.text.primary,
   marginBottom: theme.spacing(0.5),
 }));
 
-const HeaderSubtitle = styled(Typography)(({ theme }) => ({
+const HeaderSubtitle = styled(Typography)(({ theme }: ThemeProps) => ({
   fontSize: '0.875rem',
   color: theme.palette.text.secondary,
 }));
 
-const ShopLink = styled('a')(({ theme }) => ({
+const ShopLink = styled('a')(({ theme }: ThemeProps) => ({
   color: theme.palette.primary.main,
   textDecoration: 'none',
   display: 'inline-flex',
@@ -176,7 +176,7 @@ const ShopLink = styled('a')(({ theme }) => ({
   },
 }));
 
-const HeaderActions = styled(Box)(({ theme }) => ({
+const HeaderActions = styled(Box)(({ theme }: ThemeProps) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(2),
@@ -186,7 +186,7 @@ const HeaderActions = styled(Box)(({ theme }) => ({
   },
 }));
 
-const RefreshButton = styled(Button)(({ theme }) => ({
+const RefreshButton = styled(Button)(({ theme }: ThemeProps) => ({
   borderRadius: theme.shape.borderRadius,
   textTransform: 'none',
   fontWeight: 500,
@@ -199,7 +199,7 @@ const RefreshButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-const LastUpdatedText = styled(Typography)(({ theme }) => ({
+const LastUpdatedText = styled(Typography)(({ theme }: ThemeProps) => ({
   fontSize: '0.75rem',
   color: theme.palette.text.secondary,
   display: 'flex',
@@ -207,7 +207,7 @@ const LastUpdatedText = styled(Typography)(({ theme }) => ({
   gap: theme.spacing(0.5),
 }));
 
-const StyledCard = styled(Card)(({ theme }) => ({
+const StyledCard = styled(Card)(({ theme }: ThemeProps) => ({
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
@@ -219,7 +219,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
   },
 }));
 
-const CardTitle = styled(Typography)(({ theme }) => ({
+const CardTitle = styled(Typography)(({ theme }: ThemeProps) => ({
   fontWeight: 600,
   marginBottom: theme.spacing(2),
   color: theme.palette.text.primary,
@@ -228,20 +228,20 @@ const CardTitle = styled(Typography)(({ theme }) => ({
   gap: theme.spacing(1),
 }));
 
-const LoadingContainer = styled(Box)(({ theme }) => ({
+const LoadingContainer = styled(Box)(({ theme }: ThemeProps) => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
   minHeight: '200px',
 }));
 
-const ErrorContainer = styled(Box)(({ theme }) => ({
+const ErrorContainer = styled(Box)(({ theme }: ThemeProps) => ({
   padding: theme.spacing(2),
   color: theme.palette.error.main,
   textAlign: 'center'
 }));
 
-const MetricValue = styled(Typography)(({ theme }) => ({
+const MetricValue = styled(Typography)(({ theme }: ThemeProps) => ({
   padding: theme.spacing(3),
   fontSize: '2.75rem',
   fontWeight: 700,
@@ -251,7 +251,7 @@ const MetricValue = styled(Typography)(({ theme }) => ({
   letterSpacing: '-1px',
 }));
 
-const MetricLabel = styled(Typography)(({ theme }) => ({
+const MetricLabel = styled(Typography)(({ theme }: ThemeProps) => ({
   padding: theme.spacing(0, 3, 3),
   color: theme.palette.text.secondary,
   display: 'flex',
@@ -261,14 +261,14 @@ const MetricLabel = styled(Typography)(({ theme }) => ({
   fontSize: '1rem',
 }));
 
-const ChartContainer = styled(Box)(({ theme }) => ({
+const ChartContainer = styled(Box)(({ theme }: { theme: Theme }) => ({
   height: 300,
   padding: theme.spacing(1),
   borderRadius: theme.shape.borderRadius,
   backgroundColor: theme.palette.background.paper,
 }));
 
-const ProductLink = styled(MuiLink)(({ theme }) => ({
+const ProductLink = styled(MuiLink)(({ theme }: { theme: Theme }) => ({
   color: theme.palette.primary.main,
   textDecoration: 'none',
   display: 'flex',
@@ -279,7 +279,7 @@ const ProductLink = styled(MuiLink)(({ theme }) => ({
   },
 }));
 
-const OrderLink = styled(MuiLink)(({ theme }) => ({
+const OrderLink = styled(MuiLink)(({ theme }: { theme: Theme }) => ({
   color: theme.palette.primary.main,
   textDecoration: 'none',
   display: 'flex',
@@ -363,7 +363,7 @@ interface OrdersData {
 const COLORS = ['#2563eb', '#16a34a', '#d97706', '#dc2626', '#7c3aed'];
 
 // Add a modern SaaS hero section at the top of the dashboard
-const HeroSection = styled(Box)(({ theme }) => ({
+const HeroSection = styled(Box)(({ theme }: { theme: Theme }) => ({
   background: 'linear-gradient(90deg, #f5f7fa 0%, #c3cfe2 100%)',
   borderRadius: theme.shape.borderRadius,
   padding: theme.spacing(4, 4, 4, 4),
@@ -375,11 +375,11 @@ const HeroSection = styled(Box)(({ theme }) => ({
   gap: theme.spacing(4),
 }));
 
-const HeroText = styled(Box)(({ theme }) => ({
+const HeroText = styled(Box)(({ theme }: { theme: Theme }) => ({
   flex: 1,
 }));
 
-const HeroTitle = styled(Typography)(({ theme }) => ({
+const HeroTitle = styled(Typography)(({ theme }: { theme: Theme }) => ({
   fontSize: '2.5rem',
   fontWeight: 800,
   color: theme.palette.primary.main,
@@ -387,7 +387,7 @@ const HeroTitle = styled(Typography)(({ theme }) => ({
   letterSpacing: '-1px',
 }));
 
-const HeroSubtitle = styled(Typography)(({ theme }) => ({
+const HeroSubtitle = styled(Typography)(({ theme }: { theme: Theme }) => ({
   fontSize: '1.25rem',
   color: theme.palette.text.secondary,
   marginBottom: theme.spacing(2),
@@ -402,12 +402,12 @@ const HeroImage = styled('img')(() => ({
   boxShadow: '0 4px 24px 0 rgba(80, 112, 255, 0.10)',
 }));
 
-// const GridContainer = styled(Grid)(({ theme }) => ({
+// const GridContainer = styled(Grid)(({ theme }: { theme: Theme }) => ({
 //   marginTop: theme.spacing(2),
 //   gap: theme.spacing(3),
 // }));
 
-const ProductList = styled(Box)(({ theme }) => ({
+const ProductList = styled(Box)(({ theme }: { theme: Theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(2),
@@ -435,7 +435,7 @@ const ProductList = styled(Box)(({ theme }) => ({
   WebkitOverflowScrolling: 'touch',
 }));
 
-const ProductItem = styled(Box)(({ theme }) => ({
+const ProductItem = styled(Box)(({ theme }: { theme: Theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(2),
@@ -448,7 +448,7 @@ const ProductItem = styled(Box)(({ theme }) => ({
   }
 }));
 
-const ProductInfo = styled(Box)(({ theme }) => ({
+const ProductInfo = styled(Box)(({ theme }: { theme: Theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(0.5),
@@ -456,14 +456,14 @@ const ProductInfo = styled(Box)(({ theme }) => ({
   minWidth: 0
 }));
 
-const ProductName = styled(Typography)(({ theme }) => ({
+const ProductName = styled(Typography)(({ theme }: { theme: Theme }) => ({
   fontWeight: 600,
   color: theme.palette.text.primary,
   fontSize: '0.875rem',
   lineHeight: 1.4
 }));
 
-const ProductStats = styled(Typography)(({ theme }) => ({
+const ProductStats = styled(Typography)(({ theme }: { theme: Theme }) => ({
   color: theme.palette.text.secondary,
   fontSize: '0.75rem',
   display: 'flex',
@@ -471,7 +471,7 @@ const ProductStats = styled(Typography)(({ theme }) => ({
   gap: theme.spacing(1)
 }));
 
-const OrderList = styled(Box)(({ theme }) => ({
+const OrderList = styled(Box)(({ theme }: { theme: Theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(2),
@@ -499,7 +499,7 @@ const OrderList = styled(Box)(({ theme }) => ({
   WebkitOverflowScrolling: 'touch',
 }));
 
-const OrderItem = styled(Box)(({ theme }) => ({
+const OrderItem = styled(Box)(({ theme }: { theme: Theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(2),
@@ -512,7 +512,7 @@ const OrderItem = styled(Box)(({ theme }) => ({
   }
 }));
 
-const OrderInfo = styled(Box)(({ theme }) => ({
+const OrderInfo = styled(Box)(({ theme }: { theme: Theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(0.5),
@@ -520,7 +520,7 @@ const OrderInfo = styled(Box)(({ theme }) => ({
   minWidth: 0
 }));
 
-const OrderTitle = styled(Typography)(({ theme }) => ({
+const OrderTitle = styled(Typography)(({ theme }: { theme: Theme }) => ({
   fontWeight: 600,
   color: theme.palette.text.primary,
   fontSize: '0.875rem',
@@ -530,7 +530,7 @@ const OrderTitle = styled(Typography)(({ theme }) => ({
   gap: theme.spacing(1)
 }));
 
-const OrderDetails = styled(Typography)(({ theme }) => ({
+const OrderDetails = styled(Typography)(({ theme }: { theme: Theme }) => ({
   color: theme.palette.text.secondary,
   fontSize: '0.75rem',
   display: 'flex',
@@ -539,7 +539,7 @@ const OrderDetails = styled(Typography)(({ theme }) => ({
 }));
 
 // Add legend chips for graph types
-const LegendContainer = styled(Box)(({ theme }) => ({
+const LegendContainer = styled(Box)(({ theme }: { theme: Theme }) => ({
   display: 'flex',
   flexWrap: 'wrap',
   gap: theme.spacing(1),
@@ -552,7 +552,7 @@ const LegendContainer = styled(Box)(({ theme }) => ({
   },
 }));
 
-const LegendChip = styled(Box)(({ theme }) => ({
+const LegendChip = styled(Box)(({ theme }: { theme: Theme }) => ({
   display: 'inline-flex',
   alignItems: 'center',
   gap: theme.spacing(0.5),
@@ -573,7 +573,7 @@ const LegendDot = styled(Box)<{ color: string }>(({ theme, color }) => ({
   flexShrink: 0,
 }));
 
-const SectionHeader = styled(Box)(({ theme }) => ({
+const SectionHeader = styled(Box)(({ theme }: { theme: Theme }) => ({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
@@ -582,7 +582,7 @@ const SectionHeader = styled(Box)(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.divider}`,
 }));
 
-const SectionTitle = styled(Typography)(({ theme }) => ({
+const SectionTitle = styled(Typography)(({ theme }: { theme: Theme }) => ({
   fontSize: '1.25rem',
   fontWeight: 600,
   color: theme.palette.text.primary,
@@ -591,7 +591,7 @@ const SectionTitle = styled(Typography)(({ theme }) => ({
   gap: theme.spacing(1),
 }));
 
-const GraphContainer = styled(Box)(({ theme }) => ({
+const GraphContainer = styled(Box)(({ theme }: { theme: Theme }) => ({
   position: 'relative',
   padding: theme.spacing(2),
   backgroundColor: theme.palette.background.paper,
@@ -599,14 +599,14 @@ const GraphContainer = styled(Box)(({ theme }) => ({
   boxShadow: '0 2px 12px rgba(0, 0, 0, 0.05)',
 }));
 
-const GraphHeader = styled(Box)(({ theme }) => ({
+const GraphHeader = styled(Box)(({ theme }: { theme: Theme }) => ({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
   marginBottom: theme.spacing(3),
 }));
 
-const GraphTitle = styled(Typography)(({ theme }) => ({
+const GraphTitle = styled(Typography)(({ theme }: { theme: Theme }) => ({
   fontSize: '1.25rem',
   fontWeight: 600,
   color: theme.palette.text.primary,
@@ -615,7 +615,7 @@ const GraphTitle = styled(Typography)(({ theme }) => ({
   gap: theme.spacing(1),
 }));
 
-const GraphLink = styled(MuiLink)(({ theme }) => ({
+const GraphLink = styled(MuiLink)(({ theme }: { theme: Theme }) => ({
   color: theme.palette.primary.main,
   textDecoration: 'none',
   display: 'flex',
@@ -651,6 +651,8 @@ interface CardErrorState {
   orders: string | null;
   abandonedCarts: string | null;
 }
+
+type ThemeProps = { theme: Theme };
 
 const DashboardPage = () => {
   const { isAuthenticated, shop, authLoading, isAuthReady } = useAuth();
