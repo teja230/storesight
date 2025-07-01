@@ -37,6 +37,7 @@ public class AnalyticsController {
   private final ShopifyConfig shopifyConfig;
   private final BackendConfig backendConfig;
   private static final Logger logger = LoggerFactory.getLogger(AnalyticsController.class);
+  private static final long UNIFIED_CACHE_TTL_SECONDS = 60 * 60 * 2; // 2 hours
 
   @Autowired
   public AnalyticsController(
@@ -2147,5 +2148,117 @@ public class AnalyticsController {
                         0.0,
                         "shop",
                         shop)));
+  }
+
+  /**
+   * Unified analytics endpoint – aggregates the key dashboard metrics into a single payload.
+   * Implements a 2-tier cache (Redis -> Shopify) so the expensive Shopify calls only run once
+   * every TTL window per shop.  The front-end keeps its own sessionStorage layer; if that cache
+   * is empty the browser calls this endpoint which will usually be served from Redis.
+   *
+   * Payload structure (example):
+   * {
+   *   "lastUpdated": "2024-05-14T09:48:21.456Z",
+   *   "revenue": { "totalRevenue": 123.45, "timeseries": [ … ] },
+   *   "products": [ … ],
+   *   "lowInventory": 3,
+   *   "newProducts": 2,
+   *   "conversionRate": 2.1,
+   *   "abandonedCarts": 4
+   * }
+   */
+  @GetMapping("/unified")
+  @SuppressWarnings("unchecked")
+  public Mono<ResponseEntity<Map<String, Object>>> unifiedAnalytics(
+      @CookieValue(value = "shop", required = false) String shop,
+      HttpSession session) {
+
+    if (shop == null) {
+      Map<String, Object> err = Map.of(
+          "error", "Not authenticated",
+          "revenue", Map.of(),
+          "products", List.of(),
+          "lowInventory", 0,
+          "newProducts", 0,
+          "conversionRate", 0,
+          "abandonedCarts", 0);
+      return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(err));
+    }
+
+    // Redis key for this shop
+    String cacheKey = "analytics:unified:" + shop;
+
+    // Attempt redis lookup first
+    String cachedJson = redisTemplate.opsForValue().get(cacheKey);
+    if (cachedJson != null && !cachedJson.isBlank()) {
+      try {
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> cachedMap =
+            mapper.readValue(cachedJson, new com.fasterxml.jackson.core.type.TypeReference<Map<String, Object>>() {});
+        return Mono.just(ResponseEntity.ok(cachedMap));
+      } catch (Exception e) {
+        logger.warn("Failed to parse unified analytics cache for shop {} – clearing cache", shop, e);
+        redisTemplate.delete(cacheKey);
+      }
+    }
+
+    // No valid redis cache → compute fresh values
+    String token = shopService.getTokenForShop(shop, session.getId());
+    if (token == null) {
+      Map<String, Object> err = Map.of(
+          "error", "No token for shop",
+          "revenue", Map.of(),
+          "products", List.of(),
+          "lowInventory", 0,
+          "newProducts", 0,
+          "conversionRate", 0,
+          "abandonedCarts", 0);
+      return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(err));
+    }
+
+    // Build Monos for each metric by calling existing controller methods (bypasses HTTP layer)
+    Mono<Map<String, Object>> revenueMono = revenue(shop, session).map(ResponseEntity::getBody);
+    Mono<Map<String, Object>> productsMono = productAnalytics(shop, session).map(ResponseEntity::getBody);
+    Mono<Map<String, Object>> inventoryMono = lowInventory(shop, session).map(ResponseEntity::getBody);
+    Mono<Map<String, Object>> newProductsMono = newProducts(shop, session).map(ResponseEntity::getBody);
+    Mono<Map<String, Object>> conversionMono = conversionRate(shop, session).map(ResponseEntity::getBody);
+    Mono<Map<String, Object>> abandonedMono = abandonedCarts(shop, session).map(ResponseEntity::getBody);
+
+    return Mono.zip(revenueMono, productsMono, inventoryMono, newProductsMono, conversionMono, abandonedMono)
+        .map(tuple -> {
+          Map<String, Object> response = new java.util.HashMap<>();
+          // Extract tuple values
+          Map<String, Object> revenueData = tuple.getT1();
+          Map<String, Object> productsData = tuple.getT2();
+          Map<String, Object> inventoryData = tuple.getT3();
+          Map<String, Object> newProductsData = tuple.getT4();
+          Map<String, Object> conversionData = tuple.getT5();
+          Map<String, Object> abandonedData = tuple.getT6();
+
+          response.put("revenue", revenueData);
+          response.put("products", productsData.getOrDefault("products", List.of()));
+          response.put("lowInventory", inventoryData.getOrDefault("lowInventory", 0));
+          response.put("newProducts", newProductsData.getOrDefault("newProducts", 0));
+          response.put("conversionRate", conversionData.getOrDefault("conversionRate", 0));
+          response.put("abandonedCarts", abandonedData.getOrDefault("abandonedCarts", 0));
+          response.put("lastUpdated", java.time.LocalDateTime.now().toString());
+
+          try {
+            ObjectMapper mapper = new ObjectMapper();
+            String json = mapper.writeValueAsString(response);
+            redisTemplate.opsForValue().set(cacheKey, json, java.time.Duration.ofSeconds(UNIFIED_CACHE_TTL_SECONDS));
+          } catch (Exception e) {
+            logger.warn("Failed to serialise unified analytics payload for redis", e);
+          }
+
+          return ResponseEntity.ok(response);
+        })
+        .onErrorResume(e -> {
+          logger.error("Unified analytics generation failed for shop {}: {}", shop, e.getMessage(), e);
+          Map<String, Object> errResp = Map.of(
+              "error", "Failed to build analytics payload",
+              "message", e.getMessage());
+          return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errResp));
+        });
   }
 }
