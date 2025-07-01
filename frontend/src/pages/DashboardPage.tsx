@@ -5,7 +5,7 @@ import { MetricCard } from '../components/ui/MetricCard';
 import { fetchWithAuth, retryWithBackoff } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { styled } from '@mui/material/styles';
+import { styled, type Theme } from '@mui/material/styles';
 import { OpenInNew, Refresh, Storefront, ListAlt, Inventory2 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { useNotifications } from '../hooks/useNotifications';
@@ -120,14 +120,14 @@ const saveCacheToStorage = (cache: DashboardCache, shop: string) => {
 };
 
 // Modern, elegant, and professional dashboard UI improvements
-const DashboardContainer = styled(Box)(({ theme }) => ({
+const DashboardContainer = styled(Box)(({ theme }: { theme: Theme }) => ({
   minHeight: '100vh',
   backgroundColor: theme.palette.background.default,
   display: 'flex',
   flexDirection: 'column',
 }));
 
-const DashboardHeader = styled(Box)(({ theme }) => ({
+const DashboardHeader = styled(Box)(({ theme }: { theme: Theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
