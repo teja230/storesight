@@ -783,7 +783,7 @@ const DashboardPage = () => {
       const ageMinutes = Math.round((Date.now() - cachedEntry.timestamp) / (1000 * 60));
       console.log(`✅ ${cacheKey.toUpperCase()}: Using cached data (${ageMinutes}min old)`);
       // Update React state with cached data without triggering a full re-render of everything
-      setCache(prev => ({ ...prev, [cacheKey]: cachedEntry }));
+      setCache((prev: DashboardCache) => ({ ...prev, [cacheKey]: cachedEntry }));
       return cachedEntry.data;
     }
     
@@ -802,10 +802,7 @@ const DashboardPage = () => {
         };
         
         // Update React state, which will trigger the useEffect to save to sessionStorage
-        setCache((prev: DashboardCache) => ({
-          ...prev,
-          [cacheKey]: newCacheEntry
-        }));
+        setCache((prev: DashboardCache) => ({ ...prev, [cacheKey]: newCacheEntry }));
         
         console.log(`💾 ${cacheKey.toUpperCase()}: Cached fresh data`);
         return freshData;
@@ -902,13 +899,13 @@ const DashboardPage = () => {
     // Pre-flight authentication check
     if (!isAuthenticated || !shop) {
       console.log('Dashboard: Skipping revenue fetch - not authenticated or no shop');
-      setCardErrors(prev => ({ ...prev, revenue: 'Authentication required' }));
+      setCardErrors((prev: CardErrorState) => ({ ...prev, revenue: 'Authentication required' }));
       setCardLoading((prev: CardLoadingState) => ({ ...prev, revenue: false }));
       return;
     }
 
     setCardLoading((prev: CardLoadingState) => ({ ...prev, revenue: true }));
-    setCardErrors(prev => ({ ...prev, revenue: null }));
+    setCardErrors((prev: CardErrorState) => ({ ...prev, revenue: null }));
     
     try {
       const data = await checkCacheAndFetch('revenue', async () => {
@@ -917,7 +914,7 @@ const DashboardPage = () => {
       }, forceRefresh);
       
       if ((data.error_code === 'INSUFFICIENT_PERMISSIONS' || (data.error && data.error.includes('re-authentication')))) {
-        setCardErrors(prev => ({ ...prev, revenue: 'Permission denied – please re-authenticate with Shopify' }));
+        setCardErrors((prev: CardErrorState) => ({ ...prev, revenue: 'Permission denied – please re-authenticate with Shopify' }));
         return;
       }
 
@@ -933,7 +930,7 @@ const DashboardPage = () => {
       
       if (data.error_code === 'INSUFFICIENT_PERMISSIONS') {
         console.log('Revenue API access denied - insufficient permissions');
-        setCardErrors(prev => ({ ...prev, revenue: 'Permission denied – please re-authenticate with Shopify' }));
+        setCardErrors((prev: CardErrorState) => ({ ...prev, revenue: 'Permission denied – please re-authenticate with Shopify' }));
         setInsights(prev => ({
           ...prev!,
           totalRevenue: 0,
@@ -986,7 +983,7 @@ const DashboardPage = () => {
       const errorMessage = error.message === 'PERMISSION_ERROR' 
         ? 'Permission denied – please re-authenticate with Shopify'
         : 'Failed to load revenue data';
-      setCardErrors(prev => ({ ...prev, revenue: errorMessage }));
+      setCardErrors((prev: CardErrorState) => ({ ...prev, revenue: errorMessage }));
     } finally {
       setCardLoading((prev: CardLoadingState) => ({ ...prev, revenue: false }));
     }
@@ -996,13 +993,13 @@ const DashboardPage = () => {
     // Pre-flight authentication check
     if (!isAuthenticated || !shop) {
       console.log('Dashboard: Skipping products fetch - not authenticated or no shop');
-      setCardErrors(prev => ({ ...prev, products: 'Authentication required' }));
+      setCardErrors((prev: CardErrorState) => ({ ...prev, products: 'Authentication required' }));
       setCardLoading((prev: CardLoadingState) => ({ ...prev, products: false }));
       return;
     }
 
     setCardLoading((prev: CardLoadingState) => ({ ...prev, products: true }));
-    setCardErrors(prev => ({ ...prev, products: null }));
+    setCardErrors((prev: CardErrorState) => ({ ...prev, products: null }));
     
     try {
       const data = await checkCacheAndFetch('products', async () => {
@@ -1028,7 +1025,7 @@ const DashboardPage = () => {
       const errorMessage = error.message === 'PERMISSION_ERROR' 
         ? 'Permission denied – please re-authenticate with Shopify'
         : 'Failed to load products data';
-      setCardErrors(prev => ({ ...prev, products: errorMessage }));
+      setCardErrors((prev: CardErrorState) => ({ ...prev, products: errorMessage }));
     } finally {
       setCardLoading((prev: CardLoadingState) => ({ ...prev, products: false }));
     }
@@ -1038,13 +1035,13 @@ const DashboardPage = () => {
     // Pre-flight authentication check
     if (!isAuthenticated || !shop) {
       console.log('Dashboard: Skipping inventory fetch - not authenticated or no shop');
-      setCardErrors(prev => ({ ...prev, inventory: 'Authentication required' }));
+      setCardErrors((prev: CardErrorState) => ({ ...prev, inventory: 'Authentication required' }));
       setCardLoading((prev: CardLoadingState) => ({ ...prev, inventory: false }));
       return;
     }
 
     setCardLoading((prev: CardLoadingState) => ({ ...prev, inventory: true }));
-    setCardErrors(prev => ({ ...prev, inventory: null }));
+    setCardErrors((prev: CardErrorState) => ({ ...prev, inventory: null }));
     
     try {
       const data = await checkCacheAndFetch('inventory', async () => {
@@ -1070,7 +1067,7 @@ const DashboardPage = () => {
       const errorMessage = error.message === 'PERMISSION_ERROR'
         ? 'Permission denied – please re-authenticate with Shopify'
         : 'Failed to load inventory data';
-      setCardErrors(prev => ({ ...prev, inventory: errorMessage }));
+      setCardErrors((prev: CardErrorState) => ({ ...prev, inventory: errorMessage }));
     } finally {
       setCardLoading((prev: CardLoadingState) => ({ ...prev, inventory: false }));
     }
@@ -1080,13 +1077,13 @@ const DashboardPage = () => {
     // Pre-flight authentication check
     if (!isAuthenticated || !shop) {
       console.log('Dashboard: Skipping new products fetch - not authenticated or no shop');
-      setCardErrors(prev => ({ ...prev, newProducts: 'Authentication required' }));
+      setCardErrors((prev: CardErrorState) => ({ ...prev, newProducts: 'Authentication required' }));
       setCardLoading((prev: CardLoadingState) => ({ ...prev, newProducts: false }));
       return;
     }
 
     setCardLoading((prev: CardLoadingState) => ({ ...prev, newProducts: true }));
-    setCardErrors(prev => ({ ...prev, newProducts: null }));
+    setCardErrors((prev: CardErrorState) => ({ ...prev, newProducts: null }));
     
     try {
       const data = await checkCacheAndFetch('newProducts', async () => {
@@ -1112,7 +1109,7 @@ const DashboardPage = () => {
       const errorMessage = error.message === 'PERMISSION_ERROR'
         ? 'Permission denied – please re-authenticate with Shopify'
         : 'Failed to load new products data';
-      setCardErrors(prev => ({ ...prev, newProducts: errorMessage }));
+      setCardErrors((prev: CardErrorState) => ({ ...prev, newProducts: errorMessage }));
     } finally {
       setCardLoading((prev: CardLoadingState) => ({ ...prev, newProducts: false }));
     }
@@ -1122,13 +1119,13 @@ const DashboardPage = () => {
     // Pre-flight authentication check
     if (!isAuthenticated || !shop) {
       console.log('Dashboard: Skipping insights fetch - not authenticated or no shop');
-      setCardErrors(prev => ({ ...prev, insights: 'Authentication required' }));
+      setCardErrors((prev: CardErrorState) => ({ ...prev, insights: 'Authentication required' }));
       setCardLoading((prev: CardLoadingState) => ({ ...prev, insights: false }));
       return;
     }
 
     setCardLoading((prev: CardLoadingState) => ({ ...prev, insights: true }));
-    setCardErrors(prev => ({ ...prev, insights: null }));
+    setCardErrors((prev: CardErrorState) => ({ ...prev, insights: null }));
     
     try {
       const data = await checkCacheAndFetch('insights', async () => {
@@ -1144,7 +1141,7 @@ const DashboardPage = () => {
       // Handle insufficient permissions for insights
       if (data.error_code === 'INSUFFICIENT_PERMISSIONS') {
         console.log('Conversion rate API access denied - insufficient permissions');
-        setCardErrors(prev => ({ ...prev, insights: 'Permission denied – please re-authenticate with Shopify' }));
+        setCardErrors((prev: CardErrorState) => ({ ...prev, insights: 'Permission denied – please re-authenticate with Shopify' }));
         setInsights(prev => ({
           ...prev!,
           conversionRate: 0,
@@ -1168,7 +1165,7 @@ const DashboardPage = () => {
         navigate('/'); // Redirect on critical insight failure
         return;
       }
-      setCardErrors(prev => ({ ...prev, insights: 'Failed to load insights data' }));
+      setCardErrors((prev: CardErrorState) => ({ ...prev, insights: 'Failed to load insights data' }));
     } finally {
       setCardLoading((prev: CardLoadingState) => ({ ...prev, insights: false }));
     }
@@ -1178,13 +1175,13 @@ const DashboardPage = () => {
     // Pre-flight authentication check
     if (!isAuthenticated || !shop) {
       console.log('Dashboard: Skipping abandoned carts fetch - not authenticated or no shop');
-      setCardErrors(prev => ({ ...prev, abandonedCarts: 'Authentication required' }));
+      setCardErrors((prev: CardErrorState) => ({ ...prev, abandonedCarts: 'Authentication required' }));
       setCardLoading((prev: CardLoadingState) => ({ ...prev, abandonedCarts: false }));
       return;
     }
 
     setCardLoading((prev: CardLoadingState) => ({ ...prev, abandonedCarts: true }));
-    setCardErrors(prev => ({ ...prev, abandonedCarts: null }));
+    setCardErrors((prev: CardErrorState) => ({ ...prev, abandonedCarts: null }));
     
     try {
       const data = await checkCacheAndFetch('abandonedCarts', async () => {
@@ -1194,7 +1191,7 @@ const DashboardPage = () => {
       
       if (data.error_code === 'INSUFFICIENT_PERMISSIONS' || 
           (data.error && data.error.includes('re-authentication'))) {
-        setCardErrors(prev => ({ ...prev, abandonedCarts: 'Permission denied – please re-authenticate with Shopify' }));
+        setCardErrors((prev: CardErrorState) => ({ ...prev, abandonedCarts: 'Permission denied – please re-authenticate with Shopify' }));
         return;
       }
 
@@ -1209,7 +1206,7 @@ const DashboardPage = () => {
       
       if (data.error_code === 'INSUFFICIENT_PERMISSIONS') {
         console.log('Abandoned carts API access denied - insufficient permissions');
-        setCardErrors(prev => ({ ...prev, abandonedCarts: 'Permission denied – please re-authenticate with Shopify' }));
+        setCardErrors((prev: CardErrorState) => ({ ...prev, abandonedCarts: 'Permission denied – please re-authenticate with Shopify' }));
         setInsights(prev => ({
           ...prev!,
           abandonedCarts: 0
@@ -1230,7 +1227,7 @@ const DashboardPage = () => {
       const errorMessage = error.message === 'PERMISSION_ERROR'
         ? 'Permission denied – please re-authenticate with Shopify'
         : 'Failed to load abandoned carts data';
-      setCardErrors(prev => ({ ...prev, abandonedCarts: errorMessage }));
+      setCardErrors((prev: CardErrorState) => ({ ...prev, abandonedCarts: errorMessage }));
     } finally {
       setCardLoading((prev: CardLoadingState) => ({ ...prev, abandonedCarts: false }));
     }
@@ -1241,13 +1238,13 @@ const DashboardPage = () => {
     // Pre-flight authentication check
     if (!isAuthenticated || !shop) {
       console.log('Dashboard: Skipping orders fetch - not authenticated or no shop');
-      setCardErrors(prev => ({ ...prev, orders: 'Authentication required' }));
+      setCardErrors((prev: CardErrorState) => ({ ...prev, orders: 'Authentication required' }));
       setCardLoading((prev: CardLoadingState) => ({ ...prev, orders: false }));
       return;
     }
 
     setCardLoading((prev: CardLoadingState) => ({ ...prev, orders: true }));
-    setCardErrors(prev => ({ ...prev, orders: null }));
+    setCardErrors((prev: CardErrorState) => ({ ...prev, orders: null }));
     
     try {
       const data = await checkCacheAndFetch('orders', async () => {
@@ -1351,13 +1348,13 @@ const DashboardPage = () => {
       if (data.error_code === 'INSUFFICIENT_PERMISSIONS' || 
           (data.error && data.error.includes('re-authentication'))) {
         console.error('[Orders] Permission denied error:', data);
-        setCardErrors(prev => ({ ...prev, orders: 'Permission denied – please re-authenticate with Shopify' }));
+        setCardErrors((prev: CardErrorState) => ({ ...prev, orders: 'Permission denied – please re-authenticate with Shopify' }));
         return;
       }
       
       if (data.error_code === 'AUTHENTICATION_FAILED') {
         console.error('[Orders] Authentication failed:', data);
-        setCardErrors(prev => ({ ...prev, orders: 'Authentication failed – please re-authenticate with Shopify' }));
+        setCardErrors((prev: CardErrorState) => ({ ...prev, orders: 'Authentication failed – please re-authenticate with Shopify' }));
         return;
       }
       
@@ -1374,7 +1371,7 @@ const DashboardPage = () => {
       
       if (data.error_code === 'INSUFFICIENT_PERMISSIONS') {
         console.error('[Orders] Orders API access denied - insufficient permissions');
-        setCardErrors(prev => ({ ...prev, orders: 'Permission denied – please re-authenticate with Shopify' }));
+        setCardErrors((prev: CardErrorState) => ({ ...prev, orders: 'Permission denied – please re-authenticate with Shopify' }));
         setInsights(prev => ({
           ...prev!,
           orders: [],
@@ -1386,7 +1383,7 @@ const DashboardPage = () => {
       // Handle generic errors with debug info
       if (data.error && data.debug_info) {
         console.error('[Orders] Generic error with debug info:', data);
-        setCardErrors(prev => ({ ...prev, orders: `Failed to load orders: ${data.error}` }));
+        setCardErrors((prev: CardErrorState) => ({ ...prev, orders: `Failed to load orders: ${data.error}` }));
         return;
       }
       
@@ -1414,7 +1411,7 @@ const DashboardPage = () => {
       const errorMessage = error.message === 'PERMISSION_ERROR'
         ? 'Permission denied – please re-authenticate with Shopify'
         : 'Failed to load orders data';
-      setCardErrors(prev => ({ ...prev, orders: errorMessage }));
+      setCardErrors((prev: CardErrorState) => ({ ...prev, orders: errorMessage }));
     } finally {
       setCardLoading((prev: CardLoadingState) => ({ ...prev, orders: false }));
     }
@@ -1643,7 +1640,7 @@ const DashboardPage = () => {
             insights: { data: { conversionRate: unifiedData.conversionRate || 0 }, timestamp, lastUpdated, version: CACHE_VERSION, shop },
             abandonedCarts: { data: { abandonedCarts: unifiedData.abandonedCarts || 0 }, timestamp, lastUpdated, version: CACHE_VERSION, shop }
           };
-          setCache(prev => ({ ...prev, ...newCache } as DashboardCache));
+          setCache((prev: DashboardCache) => ({ ...prev, ...newCache } as DashboardCache));
 
           setInsights(prev => ({
             ...prev!,
@@ -1830,7 +1827,7 @@ const DashboardPage = () => {
                 insights: { data: { conversionRate: unified.conversionRate || 0 }, timestamp, lastUpdated, version: CACHE_VERSION, shop },
                 abandonedCarts: { data: { abandonedCarts: unified.abandonedCarts || 0 }, timestamp, lastUpdated, version: CACHE_VERSION, shop }
               };
-              setCache(prev => ({ ...prev, ...newCache } as DashboardCache));
+              setCache((prev: DashboardCache) => ({ ...prev, ...newCache } as DashboardCache));
               setInsights(prev => ({
                 ...prev!,
                 totalRevenue: unified.revenue?.totalRevenue || 0,
