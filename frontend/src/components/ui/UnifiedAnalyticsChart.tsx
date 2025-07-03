@@ -1508,6 +1508,7 @@ const UnifiedAnalyticsChart: React.FC<UnifiedAnalyticsChartProps> = ({
         elevation={0}
         sx={{
           width: '100%',
+          minHeight: '300px',
           p: 3,
           backgroundColor: '#fff',
           border: '1px solid rgba(0, 0, 0, 0.05)',
