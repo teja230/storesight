@@ -22,14 +22,14 @@ export default function useSize<T extends HTMLElement = HTMLElement>(
     // not get stuck in a perpetual loading state.
     const rect = element.getBoundingClientRect();
     const initialWidth = element.offsetWidth || rect.width || window.innerWidth;
-    const initialHeight = element.offsetHeight || rect.height || 0;
+    const initialHeight = element.offsetHeight || rect.height || window.innerHeight;
     setSize({ width: initialWidth, height: initialHeight });
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         if (entry.contentRect) {
           const observedWidth = entry.contentRect.width || entry.target.getBoundingClientRect().width || window.innerWidth;
-          const observedHeight = entry.contentRect.height || entry.target.getBoundingClientRect().height || 0;
+          const observedHeight = entry.contentRect.height || entry.target.getBoundingClientRect().height || window.innerHeight;
           setSize({
             width: observedWidth,
             height: observedHeight,
