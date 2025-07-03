@@ -20,8 +20,9 @@ export default function useSize<T extends HTMLElement = HTMLElement>(
     // during the first paint), we fall back to `getBoundingClientRect()` and
     // finally `window.innerWidth` so that consumers relying on a >0 width do
     // not get stuck in a perpetual loading state.
-    const initialWidth = element.offsetWidth || element.getBoundingClientRect().width || window.innerWidth;
-    const initialHeight = element.offsetHeight || element.getBoundingClientRect().height || 0;
+    const rect = element.getBoundingClientRect();
+    const initialWidth = element.offsetWidth || rect.width || window.innerWidth;
+    const initialHeight = element.offsetHeight || rect.height || 0;
     setSize({ width: initialWidth, height: initialHeight });
 
     const resizeObserver = new ResizeObserver((entries) => {
