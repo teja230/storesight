@@ -52,6 +52,7 @@ import {
   Stop,
 } from '@mui/icons-material';
 import LoadingIndicator from './LoadingIndicator';
+import ChartErrorBoundary from './ChartErrorBoundary';
 import type { TooltipProps, ChartPayload, UnifiedDatum, PredictionPoint } from '../../types/charts';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { debugLog } from './DebugPanel';
@@ -219,233 +220,305 @@ const processHistoricalItem = (item: any): any => {
   }
 };
 
-// Safe chart component wrapper with error boundary
-const SafeChartWrapper: React.FC<{ children: React.ReactNode; chartType: string }> = ({ children, chartType }) => {
-  const [hasError, setHasError] = useState(false);
-
-  useEffect(() => {
-    setHasError(false);
-  }, [chartType]);
-
-  if (hasError) {
-    return (
-      <Box
-        sx={{
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: 'rgba(255, 0, 0, 0.05)',
-          borderRadius: 1,
-          border: '1px solid rgba(255, 0, 0, 0.1)',
-        }}
-      >
-        <Typography variant="body2" color="error">
-          Chart rendering failed - please refresh
-        </Typography>
-      </Box>
-    );
-  }
-
-  try {
-    return <>{children}</>;
-  } catch (error) {
-    debugLog.error('Chart rendering error', { error, chartType }, 'SafeChartWrapper');
-    setHasError(true);
-    return null;
-  }
-};
-
-// Simplified and robust Line Chart component
+// Simplified and robust Line Chart component with all metrics support
 const SimpleLineChart = memo(({ data, visibleMetrics, shouldShowPredictionLine, predictionDate }: any) => {
   if (!validateChartData(data)) {
     return null;
   }
 
   return (
-    <SafeChartWrapper chartType="line">
-      <LineChart
-        data={data}
-        margin={{ top: 10, right: 30, left: 20, bottom: 20 }}
-      >
-        <CartesianGrid strokeDasharray="3 3" stroke="rgba(0, 0, 0, 0.1)" />
-        <XAxis
-          dataKey="date"
-          tickFormatter={(value) => {
-            try {
-              return new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-            } catch {
-              return value;
-            }
-          }}
-          stroke="rgba(0, 0, 0, 0.6)"
+    <LineChart
+      data={data}
+      margin={{ top: 10, right: 30, left: 20, bottom: 20 }}
+    >
+      <CartesianGrid strokeDasharray="3 3" stroke="rgba(0, 0, 0, 0.1)" />
+      <XAxis
+        dataKey="date"
+        tickFormatter={(value) => {
+          try {
+            return new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          } catch {
+            return value;
+          }
+        }}
+        stroke="rgba(0, 0, 0, 0.6)"
+      />
+      <YAxis
+        yAxisId="left"
+        stroke="rgba(0, 0, 0, 0.6)"
+        tickFormatter={(value) => `$${value.toLocaleString()}`}
+      />
+      <YAxis
+        yAxisId="right"
+        orientation="right"
+        stroke="rgba(0, 0, 0, 0.6)"
+        tickFormatter={(value) => value.toLocaleString()}
+      />
+      <Tooltip
+        labelFormatter={(label) => {
+          try {
+            return new Date(label).toLocaleDateString();
+          } catch {
+            return label;
+          }
+        }}
+        formatter={(value: number, name: string) => {
+          if (name === 'Revenue') return [`$${value.toLocaleString()}`, name];
+          if (name === 'Orders') return [value.toLocaleString(), name];
+          if (name === 'Conversion Rate') return [`${value.toFixed(2)}%`, name];
+          return [value.toLocaleString(), name];
+        }}
+      />
+      <Legend />
+      {visibleMetrics.revenue && (
+        <Line
+          yAxisId="left"
+          type="monotone"
+          dataKey="revenue"
+          stroke="#2563eb"
+          strokeWidth={2}
+          name="Revenue"
+          dot={false}
+          isAnimationActive={false}
         />
-        <YAxis
-          stroke="rgba(0, 0, 0, 0.6)"
-          tickFormatter={(value) => `$${value.toLocaleString()}`}
+      )}
+      {visibleMetrics.orders && (
+        <Line
+          yAxisId="right"
+          type="monotone"
+          dataKey="orders_count"
+          stroke="#10b981"
+          strokeWidth={2}
+          name="Orders"
+          dot={false}
+          isAnimationActive={false}
         />
-        <Tooltip
-          labelFormatter={(label) => {
-            try {
-              return new Date(label).toLocaleDateString();
-            } catch {
-              return label;
-            }
-          }}
-          formatter={(value: number, name: string) => [`$${value.toLocaleString()}`, name]}
+      )}
+      {visibleMetrics.conversion && (
+        <Line
+          yAxisId="right"
+          type="monotone"
+          dataKey="conversion_rate"
+          stroke="#f59e0b"
+          strokeWidth={2}
+          name="Conversion Rate"
+          dot={false}
+          isAnimationActive={false}
         />
-        <Legend />
-        {visibleMetrics.revenue && (
-          <Line
-            type="monotone"
-            dataKey="revenue"
-            stroke="#2563eb"
-            strokeWidth={2}
-            name="Revenue"
-            dot={false}
-            isAnimationActive={false}
-          />
-        )}
-        {shouldShowPredictionLine && predictionDate && (
-          <ReferenceLine
-            x={predictionDate}
-            stroke="rgba(0, 0, 0, 0.3)"
-            strokeDasharray="3 3"
-            label="Predictions"
-          />
-        )}
-      </LineChart>
-    </SafeChartWrapper>
+      )}
+      {shouldShowPredictionLine && predictionDate && (
+        <ReferenceLine
+          x={predictionDate}
+          stroke="rgba(0, 0, 0, 0.3)"
+          strokeDasharray="3 3"
+          label="Predictions"
+        />
+      )}
+    </LineChart>
   );
 });
 
-// Simplified and robust Area Chart component
+// Simplified and robust Area Chart component with all metrics support
 const SimpleAreaChart = memo(({ data, visibleMetrics, shouldShowPredictionLine, predictionDate }: any) => {
   if (!validateChartData(data)) {
     return null;
   }
 
   return (
-    <SafeChartWrapper chartType="area">
-      <AreaChart
-        data={data}
-        margin={{ top: 10, right: 30, left: 20, bottom: 20 }}
-      >
-        <defs>
-          <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3} />
-            <stop offset="95%" stopColor="#2563eb" stopOpacity={0.1} />
-          </linearGradient>
-        </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke="rgba(0, 0, 0, 0.1)" />
-        <XAxis
-          dataKey="date"
-          tickFormatter={(value) => {
-            try {
-              return new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-            } catch {
-              return value;
-            }
-          }}
-          stroke="rgba(0, 0, 0, 0.6)"
+    <AreaChart
+      data={data}
+      margin={{ top: 10, right: 30, left: 20, bottom: 20 }}
+    >
+      <defs>
+        <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3} />
+          <stop offset="95%" stopColor="#2563eb" stopOpacity={0.1} />
+        </linearGradient>
+        <linearGradient id="ordersGradient" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+          <stop offset="95%" stopColor="#10b981" stopOpacity={0.1} />
+        </linearGradient>
+        <linearGradient id="conversionGradient" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
+          <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.1} />
+        </linearGradient>
+      </defs>
+      <CartesianGrid strokeDasharray="3 3" stroke="rgba(0, 0, 0, 0.1)" />
+      <XAxis
+        dataKey="date"
+        tickFormatter={(value) => {
+          try {
+            return new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          } catch {
+            return value;
+          }
+        }}
+        stroke="rgba(0, 0, 0, 0.6)"
+      />
+      <YAxis
+        yAxisId="left"
+        stroke="rgba(0, 0, 0, 0.6)"
+        tickFormatter={(value) => `$${value.toLocaleString()}`}
+      />
+      <YAxis
+        yAxisId="right"
+        orientation="right"
+        stroke="rgba(0, 0, 0, 0.6)"
+        tickFormatter={(value) => value.toLocaleString()}
+      />
+      <Tooltip
+        labelFormatter={(label) => {
+          try {
+            return new Date(label).toLocaleDateString();
+          } catch {
+            return label;
+          }
+        }}
+        formatter={(value: number, name: string) => {
+          if (name === 'Revenue') return [`$${value.toLocaleString()}`, name];
+          if (name === 'Orders') return [value.toLocaleString(), name];
+          if (name === 'Conversion Rate') return [`${value.toFixed(2)}%`, name];
+          return [value.toLocaleString(), name];
+        }}
+      />
+      <Legend />
+      {visibleMetrics.revenue && (
+        <Area
+          yAxisId="left"
+          type="monotone"
+          dataKey="revenue"
+          stroke="#2563eb"
+          strokeWidth={2}
+          fill="url(#revenueGradient)"
+          name="Revenue"
+          isAnimationActive={false}
         />
-        <YAxis
-          stroke="rgba(0, 0, 0, 0.6)"
-          tickFormatter={(value) => `$${value.toLocaleString()}`}
+      )}
+      {visibleMetrics.orders && (
+        <Area
+          yAxisId="right"
+          type="monotone"
+          dataKey="orders_count"
+          stroke="#10b981"
+          strokeWidth={2}
+          fill="url(#ordersGradient)"
+          name="Orders"
+          isAnimationActive={false}
         />
-        <Tooltip
-          labelFormatter={(label) => {
-            try {
-              return new Date(label).toLocaleDateString();
-            } catch {
-              return label;
-            }
-          }}
-          formatter={(value: number, name: string) => [`$${value.toLocaleString()}`, name]}
+      )}
+      {visibleMetrics.conversion && (
+        <Area
+          yAxisId="right"
+          type="monotone"
+          dataKey="conversion_rate"
+          stroke="#f59e0b"
+          strokeWidth={2}
+          fill="url(#conversionGradient)"
+          name="Conversion Rate"
+          isAnimationActive={false}
         />
-        <Legend />
-        {visibleMetrics.revenue && (
-          <Area
-            type="monotone"
-            dataKey="revenue"
-            stroke="#2563eb"
-            strokeWidth={2}
-            fill="url(#revenueGradient)"
-            name="Revenue"
-            isAnimationActive={false}
-          />
-        )}
-        {shouldShowPredictionLine && predictionDate && (
-          <ReferenceLine
-            x={predictionDate}
-            stroke="rgba(0, 0, 0, 0.3)"
-            strokeDasharray="3 3"
-            label="Predictions"
-          />
-        )}
-      </AreaChart>
-    </SafeChartWrapper>
+      )}
+      {shouldShowPredictionLine && predictionDate && (
+        <ReferenceLine
+          x={predictionDate}
+          stroke="rgba(0, 0, 0, 0.3)"
+          strokeDasharray="3 3"
+          label="Predictions"
+        />
+      )}
+    </AreaChart>
   );
 });
 
-// Simplified and robust Bar Chart component
+// Simplified and robust Bar Chart component with all metrics support
 const SimpleBarChart = memo(({ data, visibleMetrics, shouldShowPredictionLine, predictionDate }: any) => {
   if (!validateChartData(data)) {
     return null;
   }
 
   return (
-    <SafeChartWrapper chartType="bar">
-      <BarChart
-        data={data}
-        margin={{ top: 10, right: 30, left: 20, bottom: 20 }}
-      >
-        <CartesianGrid strokeDasharray="3 3" stroke="rgba(0, 0, 0, 0.1)" />
-        <XAxis
-          dataKey="date"
-          tickFormatter={(value) => {
-            try {
-              return new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-            } catch {
-              return value;
-            }
-          }}
-          stroke="rgba(0, 0, 0, 0.6)"
+    <BarChart
+      data={data}
+      margin={{ top: 10, right: 30, left: 20, bottom: 20 }}
+    >
+      <CartesianGrid strokeDasharray="3 3" stroke="rgba(0, 0, 0, 0.1)" />
+      <XAxis
+        dataKey="date"
+        tickFormatter={(value) => {
+          try {
+            return new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          } catch {
+            return value;
+          }
+        }}
+        stroke="rgba(0, 0, 0, 0.6)"
+      />
+      <YAxis
+        yAxisId="left"
+        stroke="rgba(0, 0, 0, 0.6)"
+        tickFormatter={(value) => `$${value.toLocaleString()}`}
+      />
+      <YAxis
+        yAxisId="right"
+        orientation="right"
+        stroke="rgba(0, 0, 0, 0.6)"
+        tickFormatter={(value) => value.toLocaleString()}
+      />
+      <Tooltip
+        labelFormatter={(label) => {
+          try {
+            return new Date(label).toLocaleDateString();
+          } catch {
+            return label;
+          }
+        }}
+        formatter={(value: number, name: string) => {
+          if (name === 'Revenue') return [`$${value.toLocaleString()}`, name];
+          if (name === 'Orders') return [value.toLocaleString(), name];
+          if (name === 'Conversion Rate') return [`${value.toFixed(2)}%`, name];
+          return [value.toLocaleString(), name];
+        }}
+      />
+      <Legend />
+      {visibleMetrics.revenue && (
+        <Bar
+          yAxisId="left"
+          dataKey="revenue"
+          fill="#2563eb"
+          name="Revenue"
+          radius={[2, 2, 0, 0]}
+          isAnimationActive={false}
         />
-        <YAxis
-          stroke="rgba(0, 0, 0, 0.6)"
-          tickFormatter={(value) => `$${value.toLocaleString()}`}
+      )}
+      {visibleMetrics.orders && (
+        <Bar
+          yAxisId="right"
+          dataKey="orders_count"
+          fill="#10b981"
+          name="Orders"
+          radius={[2, 2, 0, 0]}
+          isAnimationActive={false}
         />
-        <Tooltip
-          labelFormatter={(label) => {
-            try {
-              return new Date(label).toLocaleDateString();
-            } catch {
-              return label;
-            }
-          }}
-          formatter={(value: number, name: string) => [`$${value.toLocaleString()}`, name]}
+      )}
+      {visibleMetrics.conversion && (
+        <Bar
+          yAxisId="right"
+          dataKey="conversion_rate"
+          fill="#f59e0b"
+          name="Conversion Rate"
+          radius={[2, 2, 0, 0]}
+          isAnimationActive={false}
         />
-        <Legend />
-        {visibleMetrics.revenue && (
-          <Bar
-            dataKey="revenue"
-            fill="#2563eb"
-            name="Revenue"
-            radius={[2, 2, 0, 0]}
-            isAnimationActive={false}
-          />
-        )}
-        {shouldShowPredictionLine && predictionDate && (
-          <ReferenceLine
-            x={predictionDate}
-            stroke="rgba(0, 0, 0, 0.3)"
-            strokeDasharray="3 3"
-            label="Predictions"
-          />
-        )}
-      </BarChart>
-    </SafeChartWrapper>
+      )}
+      {shouldShowPredictionLine && predictionDate && (
+        <ReferenceLine
+          x={predictionDate}
+          stroke="rgba(0, 0, 0, 0.3)"
+          strokeDasharray="3 3"
+          label="Predictions"
+        />
+      )}
+    </BarChart>
   );
 });
 
@@ -455,11 +528,11 @@ const UnifiedAnalyticsChart: React.FC<UnifiedAnalyticsChartProps> = ({
   error = null,
   height = CHART_DIMENSIONS.DEFAULT_HEIGHT,
 }) => {
-  const [chartType, setChartType] = useState<ChartType>('area'); // Default to simpler chart type
+  const [chartType, setChartType] = useState<ChartType>('area');
   const [showPredictions, setShowPredictions] = useState(true);
   const [visibleMetrics, setVisibleMetrics] = useState({
     revenue: true,
-    orders: false, // Start with fewer metrics to reduce complexity
+    orders: true,
     conversion: false,
   });
 
@@ -634,6 +707,12 @@ const UnifiedAnalyticsChart: React.FC<UnifiedAnalyticsChartProps> = ({
             onClick={() => handleMetricToggle('orders')}
             size="small"
           />
+          <Chip
+            label="Conversion"
+            color={visibleMetrics.conversion ? 'primary' : 'default'}
+            onClick={() => handleMetricToggle('conversion')}
+            size="small"
+          />
         </Box>
       </Box>
 
@@ -648,39 +727,41 @@ const UnifiedAnalyticsChart: React.FC<UnifiedAnalyticsChartProps> = ({
         }}
       >
         <Box sx={{ height: chartHeight }}>
-          <ResponsiveContainer width="100%" height="100%">
-            {(() => {
-              switch (chartType) {
-                case 'line':
-                  return (
-                    <SimpleLineChart
-                      data={chartData}
-                      visibleMetrics={visibleMetrics}
-                      shouldShowPredictionLine={shouldShowPredictionLine}
-                      predictionDate={predictionDate}
-                    />
-                  );
-                case 'bar':
-                  return (
-                    <SimpleBarChart
-                      data={chartData}
-                      visibleMetrics={visibleMetrics}
-                      shouldShowPredictionLine={shouldShowPredictionLine}
-                      predictionDate={predictionDate}
-                    />
-                  );
-                default:
-                  return (
-                    <SimpleAreaChart
-                      data={chartData}
-                      visibleMetrics={visibleMetrics}
-                      shouldShowPredictionLine={shouldShowPredictionLine}
-                      predictionDate={predictionDate}
-                    />
-                  );
-              }
-            })()}
-          </ResponsiveContainer>
+          <ChartErrorBoundary fallbackHeight={chartHeight}>
+            <ResponsiveContainer width="100%" height="100%">
+              {(() => {
+                switch (chartType) {
+                  case 'line':
+                    return (
+                      <SimpleLineChart
+                        data={chartData}
+                        visibleMetrics={visibleMetrics}
+                        shouldShowPredictionLine={shouldShowPredictionLine}
+                        predictionDate={predictionDate}
+                      />
+                    );
+                  case 'bar':
+                    return (
+                      <SimpleBarChart
+                        data={chartData}
+                        visibleMetrics={visibleMetrics}
+                        shouldShowPredictionLine={shouldShowPredictionLine}
+                        predictionDate={predictionDate}
+                      />
+                    );
+                  default:
+                    return (
+                      <SimpleAreaChart
+                        data={chartData}
+                        visibleMetrics={visibleMetrics}
+                        shouldShowPredictionLine={shouldShowPredictionLine}
+                        predictionDate={predictionDate}
+                      />
+                    );
+                }
+              })()}
+            </ResponsiveContainer>
+          </ChartErrorBoundary>
         </Box>
 
         {/* Chart Summary */}
